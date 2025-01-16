@@ -58,8 +58,8 @@ $router = new Router();
             </div>
             <a href="#" class="block px-4 py-2 hover:bg-gray-100">Enseigner</a>
             <a href="#" class="block px-4 py-2 hover:bg-gray-100">Mon apprentissage</a>
-            <a href="/users/register" class="block px-4 py-2 hover:bg-gray-100">S'inscrire</a>
-            <a href="/users/login" class="block px-4 py-2 hover:bg-gray-100">Connexion</a>
+            <a href="index.php?view=register" class="block px-4 py-2 hover:bg-gray-100">S'inscrire</a>
+            <a href="index.php?view=login" class="block px-4 py-2 hover:bg-gray-100">Connexion</a>
         </div>
     </nav>
 
