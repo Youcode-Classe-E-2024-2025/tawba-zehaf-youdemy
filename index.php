@@ -48,8 +48,8 @@
             </div>
             <a href="#" class="block px-4 py-2 hover:bg-gray-100">Enseigner</a>
             <a href="#" class="block px-4 py-2 hover:bg-gray-100">Mon apprentissage</a>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100">S'inscrire</a>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Connexion</a>
+            <a href="/users/register" class="block px-4 py-2 hover:bg-gray-100">S'inscrire</a>
+            <a href="/users/login" class="block px-4 py-2 hover:bg-gray-100">Connexion</a>
         </div>
     </nav>
 
@@ -70,7 +70,7 @@
     </header>
 
     <main>
-        <?= $content ?>
+
         <section class="max-w-7xl mx-auto px-4 py-12">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl font-bold">Cours populaires</h2>

@@ -1,5 +1,5 @@
 <?php
-
+require_once 'src/Models/Entity/User.php';
 class AuthController {
     private $userModel;
 
@@ -64,4 +64,3 @@ class AuthController {
         require VIEW_PATH . $view;
     }
 }
-
