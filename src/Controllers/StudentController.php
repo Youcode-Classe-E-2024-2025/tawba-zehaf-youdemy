@@ -1,5 +1,5 @@
 <?php
-
+require_once '../Services/CourseService.php';
 class StudentController {
     private $courseService;
     private $authService;

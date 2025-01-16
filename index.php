@@ -1,3 +1,13 @@
+<?php
+require_once __DIR__ . '/src/Router.php';
+
+// Démarrage de la session
+session_start();
+
+// Initialisation du Router
+$router = new Router();
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
