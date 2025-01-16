@@ -2,6 +2,9 @@
 
 class Router {
 
+    // Array to store routes
+    private $routes = [];
+
     // Directory paths for actions (controllers) and views
     private $actionDirectory;
     private $viewDirectory;
@@ -83,5 +86,20 @@ class Router {
             }
         }
     }
-}
 
+    public function addRoute($method, $path, $handler) {
+
+        $this->routes[] = [
+
+            'method' => $method,
+
+            'path' => $path,
+
+            'handler' => $handler
+
+        ];
+
+    }
+
+    // Other Router properties and methods
+}

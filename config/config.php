@@ -10,6 +10,7 @@ define('DB_PASS', 'secret');
 define('BASE_PATH', dirname(__DIR__));
 define('VIEW_PATH', BASE_PATH . '/src/Views/');
 define('CONTROLLER_PATH', BASE_PATH . '/src/Controllers/');
+define('MODEL_PATH', BASE_PATH . '/src/Models/');
 
 // Default settings
 define('DEFAULT_VIEW', 'home');
@@ -26,14 +27,76 @@ ini_set('display_errors', 1);
 // Start session
 session_start();
 
-// Load the Router class
-require_once BASE_PATH . '/src/Router.php';
+// Autoloader function
+function autoloader($class) {
+    $paths = [
+        CONTROLLER_PATH,
+        MODEL_PATH,
+        BASE_PATH . '/src/'
+    ];
 
-// Load the Database class
-require_once BASE_PATH . 'Database.php';
+    foreach ($paths as $path) {
+        $file = $path . $class . '.php';
+        if (file_exists($file)) {
+            require_once $file;
+            return;
+        }
+    }
+}
+
+// Register autoloader
+spl_autoload_register('autoloader');
 
 // Initialize the Router
-$router = new Router(VIEW_PATH, DEFAULT_VIEW, NOT_FOUND_VIEW, CONTROLLER_PATH);
+$router = new Router();
+
+// Add routes
+$router->addRoute('GET', '/', function() {
+    $controller = new HomeController();
+    return $controller->index();
+});
+
+$router->addRoute('GET', '/courses', function() {
+    $controller = new CourseController();
+    return $controller->index();
+});
+
+$router->addRoute('GET', '/courses/:id', function($params) {
+    $controller = new CourseController();
+    return $controller->show($params['id']);
+});
+
+$router->addRoute('GET', '/register', function() {
+    $controller = new AuthController();
+    return $controller->register();
+});
+
+$router->addRoute('POST', '/register', function() {
+    $controller = new AuthController();
+    return $controller->register();
+});
+
+$router->addRoute('GET', '/login', function() {
+    $controller = new AuthController();
+    return $controller->login();
+});
+
+$router->addRoute('POST', '/login', function() {
+    $controller = new AuthController();
+    return $controller->login();
+});
+
+$router->addRoute('GET', '/logout', function() {
+    $controller = new AuthController();
+    return $controller->logout();
+});
+
+// Set 404 handler
+$router->setNotFoundHandler(function() {
+    http_response_code(404);
+    $controller = new HomeController();
+    $controller->render('404.php', ['title' => 'Page Not Found']);
+});
 
 // Database connection function
 function getDbConnection() {
