@@ -20,7 +20,8 @@ class CourseRepository {
     public function create($course) {
         $query = "INSERT INTO courses (title, description, content, teacher_id, category_id, price, created_at, updated_at) 
                   VALUES (:title, :description, :content, :teacher_id, :category_id, :price, :created_at, :updated_at)";
-        return $this->db->query($query, $course)->lastInsertId();
+        $this->db->query($query, $course);
+        return $this->db->lastInsertId();
     }
 
     public function update($course) {

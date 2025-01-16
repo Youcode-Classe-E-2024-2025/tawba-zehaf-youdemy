@@ -3,9 +3,8 @@
 class TeacherController {
     private $courseService;
     private $authService;
-
     public function __construct() {
-        $this->courseService = new CourseService();
+        $this->courseService = new CourseService($courseRepository,  $tagRepository);
         $this->authService = new AuthService();
     }
 
