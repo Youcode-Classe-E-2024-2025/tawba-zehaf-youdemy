@@ -1,55 +1,43 @@
 <?php
-// Start session
-session_start();
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/config/config.php';
 
-// Autoload classes (consider using Composer in the future)
-// spl_autoload_register(function ($class) {
-//     $class = str_replace('Youdemy\\', '', $class);
-//     $file = __DIR__ . '/src/' . str_replace('\\', '/', $class) . '.php';
-//     if (file_exists($file)) {
-//         require_once $file;
-//     }
-// });
+use Youdemy\Router;
 
-// Load configuration
-require_once __DIR__ . '/config/Database.php';
-
-// Initialize Router
 $router = new Router();
 
-// Define routes
-$router->get('/', function() {
-    require_once __DIR__ . '/src/Views/home_view.php';
-});
+// Add routes
+$router->get('/', 'HomeController@index');
+$router->get('/courses', 'CourseController@index');
+$router->get('/courses/:id', 'CourseController@show');
+$router->get('/register', 'AuthController@register');
+$router->post('/register', 'AuthController@register');
+$router->get('/login', 'AuthController@login');
+$router->post('/login', 'AuthController@login');
+$router->get('/logout', 'AuthController@logout');
 
-$router->get('/login', function() {
-    require_once __DIR__ . '/src/Views/login_view.php';
-});
+// Student routes
+$router->get('/student/dashboard', 'StudentController@dashboard');
+$router->post('/student/enroll/:id', 'StudentController@enrollCourse');
+$router->get('/student/courses/:id', 'StudentController@viewCourse');
 
-$router->post('/login', function() {
-    $controller = new AuthController();
-    $controller->login();
-});
+// Teacher routes
+$router->get('/teacher/dashboard', 'TeacherController@dashboard');
+$router->get('/teacher/courses/create', 'TeacherController@createCourse');
+$router->post('/teacher/courses/create', 'TeacherController@createCourse');
+$router->get('/teacher/courses/:id/edit', 'TeacherController@editCourse');
+$router->post('/teacher/courses/:id/edit', 'TeacherController@editCourse');
 
-$router->get('/register', function() {
-    require_once __DIR__ . '/src/Views/register_view.php';
-});
+// Admin routes
+$router->get('/admin/dashboard', 'AdminController@dashboard');
+$router->get('/admin/users', 'AdminController@manageUsers');
+$router->get('/admin/courses', 'AdminController@manageCourses');
 
-$router->post('/register', function() {
-    $controller = new AuthController();
-    $controller->register();
-});
-
-$router->get('/logout', function() {
-    $controller = new AuthController();
-    $controller->logout();
-});
-
-// Handle 404 errors
+// Set 404 handler
 $router->setNotFoundHandler(function() {
     http_response_code(404);
     require_once __DIR__ . '/src/Views/404_view.php';
 });
 
 // Dispatch the request
-$router->dispatch();
+$router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

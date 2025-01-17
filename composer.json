@@ -1,0 +1,25 @@
+{
+    "name": "tawba/youdemy",
+    "description": "Une plateforme d'apprentissage en ligne moderne",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "ext-pdo": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Youdemy\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tawba Zehaf",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}

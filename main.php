@@ -1,11 +1,8 @@
 <?php
-require_once 'src/Router.php';
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/config/config.php';
 
-// Démarrage de la session
-// session_start();
-
-// Initialisation du Router
-$router = new Router();
+use Youdemy\Router;
 
 ?>
 <!DOCTYPE html>
@@ -25,7 +22,7 @@ $router = new Router();
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <a href="#" class="text-2xl font-bold text-purple-600">YouDemy</a>
+                    <a href="/" class="text-2xl font-bold text-purple-600">YouDemy</a>
                     <div class="hidden md:flex ml-10">
                         <input type="text" placeholder="Rechercher un cours..." aria-label="Rechercher un cours"
                             class="w-96 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
@@ -35,15 +32,16 @@ $router = new Router();
                     <button class="md:hidden" aria-label="Rechercher">
                         <i class="fas fa-search text-gray-600"></i>
                     </button>
-                    <a href="#" class="hidden md:block hover:text-purple-600">Enseigner</a>
-                    <a href="#" class="hidden md:block hover:text-purple-600">Mon apprentissage</a>
-                    <button class="hidden md:block bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                    <a href="/teacher/dashboard" class="hidden md:block hover:text-purple-600">Enseigner</a>
+                    <a href="/student/dashboard" class="hidden md:block hover:text-purple-600">Mon apprentissage</a>
+                    <a href="/register"
+                        class="hidden md:block bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
                         S'inscrire
-                    </button>
-                    <button
+                    </a>
+                    <a href="/login"
                         class="hidden md:block border border-purple-600 text-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50">
                         Connexion
-                    </button>
+                    </a>
                     <button class="md:hidden" aria-label="Menu" id="mobileMenuButton">
                         <i class="fas fa-bars text-gray-600"></i>
                     </button>
@@ -56,10 +54,10 @@ $router = new Router();
                 <input type="text" placeholder="Rechercher un cours..." aria-label="Rechercher un cours"
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
             </div>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Enseigner</a>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Mon apprentissage</a>
-            <a href="index.php?view=register" class="block px-4 py-2 hover:bg-gray-100">S'inscrire</a>
-            <a href="index.php?view=login" class="block px-4 py-2 hover:bg-gray-100">Connexion</a>
+            <a href="/teacher/dashboard" class="block px-4 py-2 hover:bg-gray-100">Enseigner</a>
+            <a href="/student/dashboard" class="block px-4 py-2 hover:bg-gray-100">Mon apprentissage</a>
+            <a href="/register" class="block px-4 py-2 hover:bg-gray-100">S'inscrire</a>
+            <a href="/login" class="block px-4 py-2 hover:bg-gray-100">Connexion</a>
         </div>
     </nav>
 
@@ -71,9 +69,10 @@ $router = new Router();
                     <h1 class="text-4xl font-bold mb-4">Apprenez de nouvelles compétences en ligne</h1>
                     <p class="text-lg mb-8">Des milliers de cours dispensés par des experts. Commencez dès aujourd'hui !
                     </p>
-                    <button class="bg-white text-purple-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100">
+                    <a href="/courses"
+                        class="inline-block bg-white text-purple-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100">
                         Découvrir les cours
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -446,21 +445,21 @@ $router = new Router();
     </footer>
 
     <script>
-        // Toggle mobile menu
-        document.getElementById('mobileMenuButton').addEventListener('click', () => {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
-        });
+    // Toggle mobile menu
+    document.getElementById('mobileMenuButton').addEventListener('click', () => {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('hidden');
+    });
 
-        // Sticky header shadow
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
-            if (window.scrollY > 0) {
-                nav.classList.add('shadow-md');
-            } else {
-                nav.classList.remove('shadow-md');
-            }
-        });
+    // Sticky header shadow
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 0) {
+            nav.classList.add('shadow-md');
+        } else {
+            nav.classList.remove('shadow-md');
+        }
+    });
     </script>
 </body>
 

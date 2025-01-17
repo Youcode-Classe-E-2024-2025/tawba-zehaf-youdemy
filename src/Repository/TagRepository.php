@@ -14,61 +14,116 @@ class TagRepository
         $this->db = $db;
     }
 
-    public function findById(int $id): ?Tag
+    /**
+     * Find a tag by its ID
+     */
+    public function find(int $id): ?Tag
     {
-        $stmt = $this->db->prepare("SELECT * FROM tags WHERE id = :id");
+        $stmt = $this->db->prepare('SELECT * FROM tags WHERE id = :id');
         $stmt->execute(['id' => $id]);
+        
         $tagData = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!$tagData) {
             return null;
         }
-
+        
         return $this->createTagFromData($tagData);
     }
 
+    /**
+     * Find all tags
+     * @return Tag[]
+     */
     public function findAll(): array
     {
-        $stmt = $this->db->query("SELECT * FROM tags");
+        $stmt = $this->db->query('SELECT * FROM tags ORDER BY name');
         $tagsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $tags = [];
-        foreach ($tagsData as $tagData) {
-            $tags[] = $this->createTagFromData($tagData);
-        }
-
-        return $tags;
+        
+        return array_map([$this, 'createTagFromData'], $tagsData);
     }
 
-    public function save(Tag $tag): void
+    /**
+     * Find tags by name (partial match)
+     * @return Tag[]
+     */
+    public function findByName(string $name): array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM tags WHERE name LIKE :name');
+        $stmt->execute(['name' => "%$name%"]);
+        $tagsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return array_map([$this, 'createTagFromData'], $tagsData);
+    }
+
+    /**
+     * Save a new tag or update an existing one
+     */
+    public function save(Tag $tag): Tag
     {
         if ($tag->getId()) {
-            $this->update($tag);
-        } else {
-            $this->insert($tag);
+            return $this->update($tag);
         }
+        
+        return $this->create($tag);
     }
 
-    private function insert(Tag $tag): void
+    /**
+     * Delete a tag
+     */
+    public function delete(Tag $tag): void
     {
-        $stmt = $this->db->prepare("INSERT INTO tags (name) VALUES (:name)");
-        $stmt->execute(['name' => $tag->getName()]);
+        $stmt = $this->db->prepare('DELETE FROM tags WHERE id = :id');
+        $stmt->execute(['id' => $tag->getId()]);
     }
 
-    private function update(Tag $tag): void
+    /**
+     * Create a new tag
+     */
+    private function create(Tag $tag): Tag
     {
-        $stmt = $this->db->prepare("UPDATE tags SET name = :name WHERE id = :id");
+        $stmt = $this->db->prepare('
+            INSERT INTO tags (name, created_at) 
+            VALUES (:name, :created_at)
+        ');
+        
+        $stmt->execute([
+            'name' => $tag->getName(),
+            'created_at' => $tag->getCreatedAt()->format('Y-m-d H:i:s')
+        ]);
+        
+        // Set the ID on the tag object
+        $tag->setId($this->db->lastInsertId());
+        
+        return $tag;
+    }
+
+    /**
+     * Update an existing tag
+     */
+    private function update(Tag $tag): Tag
+    {
+        $stmt = $this->db->prepare('
+            UPDATE tags 
+            SET name = :name 
+            WHERE id = :id
+        ');
+        
         $stmt->execute([
             'id' => $tag->getId(),
             'name' => $tag->getName()
         ]);
+        
+        return $tag;
     }
 
-    private function createTagFromData(array $tagData): Tag
+    /**
+     * Create a Tag object from database data
+     */
+    private function createTagFromData(array $data): Tag
     {
-        $tag = new Tag($tagData['name']);
-        // Set other properties...
+        $tag = new Tag($data['name']);
+        $tag->setId($data['id']);
+        // Set created_at if you need it
         return $tag;
     }
 }
-

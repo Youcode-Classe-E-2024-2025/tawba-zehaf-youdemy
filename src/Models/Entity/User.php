@@ -1,4 +1,5 @@
 <?php
+namespace Youdemy\Models\Entity;
 class User
 {
     private int $id;

@@ -1,14 +1,10 @@
 <?php
-require_once __DIR__ . '/../Models/Entity/User.php';
+namespace Youdemy\Controllers;
+
+use Youdemy\Models\Entity\User;
+
 class AuthController
 {
-    private $userModel;
-
-    public function __construct()
-    {
-        $this->userModel = new User();
-    }
-
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,15 +13,18 @@ class AuthController
             $password = $_POST['password'] ?? '';
             $role = $_POST['role'] ?? 'student';
 
-            if ($this->userModel->createUser($username, $email, $password, $role)) {
-                $_SESSION['success'] = 'Registration successful. You can now log in.';
-                $this->redirect('/login');
-            } else {
-                $error = 'Registration failed. Please try again.';
+            try {
+                $user = new User($username, $email, $password, $role);
+                // TODO: Save user to database
+                $_SESSION['success'] = 'Inscription réussie. Veuillez vous connecter.';
+                header('Location: /login');
+                exit;
+            } catch (\InvalidArgumentException $e) {
+                $_SESSION['error'] = $e->getMessage();
             }
         }
-
-        $this->render('auth/register.php', ['title' => 'Register']);
+        
+        require_once __DIR__ . '/../Views/auth/register.php';
     }
 
     public function login()
@@ -34,35 +33,25 @@ class AuthController
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            $user = $this->userModel->getUserByEmail($email);
-
-            if ($user && password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_role'] = $user['role'];
-                $this->redirect('/dashboard');
-            } else {
-                $error = 'Invalid email or password.';
+            try {
+                // TODO: Implement login logic with database
+                $_SESSION['user_id'] = 1; // Temporary
+                $_SESSION['success'] = 'Connexion réussie';
+                header('Location: /dashboard');
+                exit;
+            } catch (\Exception $e) {
+                $_SESSION['error'] = 'Email ou mot de passe incorrect';
             }
         }
-
-        $this->render('auth/login.php', ['title' => 'Login']);
+        
+        require_once __DIR__ . '/../Views/auth/login.php';
     }
 
     public function logout()
     {
+        session_start();
         session_destroy();
-        $this->redirect('/');
-    }
-
-    private function redirect($url)
-    {
-        header("Location: $url");
+        header('Location: /');
         exit;
-    }
-
-    private function render($view, $data = [])
-    {
-        extract($data);
-        require VIEW_PATH . $view;
     }
 }

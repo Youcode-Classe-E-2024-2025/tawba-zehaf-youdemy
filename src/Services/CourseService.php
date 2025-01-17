@@ -1,6 +1,11 @@
 <?php
+require_once 'src/Repository/CourseRepository.php';
 require_once 'src/Repository/TagRepository.php';
-use App\Repository\TagRepository;
+
+// Ensure TagRepository class is defined
+if (!class_exists('TagRepository')) {
+    throw new \Exception("TagRepository class not found.");
+}
 class CourseService
 {
     private CourseRepository $courseRepository;

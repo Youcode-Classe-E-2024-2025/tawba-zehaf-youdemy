@@ -1,5 +1,6 @@
 <?php
 require_once '../Services/CourseService.php';
+require_once '../Services/AuthService.php';
 class StudentController {
     private $courseService;
     private $authService;
