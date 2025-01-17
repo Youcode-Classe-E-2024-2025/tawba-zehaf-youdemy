@@ -38,8 +38,17 @@ private $pdo;
         return $stmt;
 
     }
-
-    public function lastInsertId() {
-        return $this->pdo->lastInsertId();
+    
+    
+    
+    
+        public function getConnection() {
+    
+            return $this->connection;
+    
+        }
+        public function lastInsertId() {
+            return $this->pdo->lastInsertId();
+        }
     }
-}
+    

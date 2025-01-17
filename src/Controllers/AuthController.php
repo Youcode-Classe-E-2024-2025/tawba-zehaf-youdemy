@@ -1,9 +1,11 @@
 <?php
-require_once 'src/Models/Entity/User.php';
-class AuthController {
+require_once __DIR__ . '/../Models/Entity/User.php';
+class AuthController
+{
     private $userModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->userModel = new User();
     }
 

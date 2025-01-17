@@ -26,7 +26,7 @@ class HomeController {
         extract($data);
         ob_start();
         require VIEW_PATH . $view;
-        return ob_get_clean();
+        // return ob_get_clean();
     }
 
     private function renderLayout($layout, $data = [])
@@ -34,4 +34,6 @@ class HomeController {
         extract($data);
         require VIEW_PATH . $layout;
     }
+
+
 }

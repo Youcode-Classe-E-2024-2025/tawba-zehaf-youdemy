@@ -1,9 +1,13 @@
 <?php
 
-class Router {
+
+
+class Router
+{
 
     // Array to store routes
     private $routes = [];
+    private $notFoundHandler;
 
     // Directory paths for actions (controllers) and views
     private $actionDirectory;
@@ -21,7 +25,8 @@ class Router {
      * @param string $notFound View to render when a specified view is not found.
      * @param string $actionDir Path to the directory where controller (action) files are stored.
      */
-    public function __construct($dir = __DIR__ . '/../Views', $default = 'home', $notFound = '404', $actionDir = __DIR__ . '/../Controllers') {
+    public function __construct($dir = __DIR__ . '/../Views', $default = 'home', $notFound = '404', $actionDir = __DIR__ . '/../Controllers')
+    {
         $this->viewDirectory = rtrim($dir, '/') . '/';
         $this->defaultView = $default;
         $this->notFound = $notFound;
@@ -36,7 +41,8 @@ class Router {
      *
      * @return void
      */
-    public function view(): void {
+    public function view(): void
+    {
         // Retrieve the view name from the URL or use the default view
         $view = $_GET['view'] ?? $this->defaultView;
 
@@ -50,7 +56,7 @@ class Router {
         if (file_exists($viewFile)) {
             require_once $viewFile;
         } else {
-            require_once $this->viewDirectory . $this->notFound . '_view.php';
+            require_once $this->viewDirectory . $this->notFound . '404_view.php';
         }
     }
 
@@ -62,7 +68,8 @@ class Router {
      *
      * @return mixed The return value of the controller method, if any.
      */
-    public function action() {
+    public function action()
+    {
         // Check if the `action` parameter is set in the URL
         if (!isset($_GET['action'])) {
             return;
@@ -87,19 +94,46 @@ class Router {
         }
     }
 
-    public function addRoute($method, $path, $handler) {
 
-        $this->routes[] = [
 
-            'method' => $method,
+    public function addRoute($method, $path, $handler)
+    {
 
-            'path' => $path,
-
-            'handler' => $handler
-
-        ];
-
+        $this->routes[] = ['method' => $method, 'path' => $path, 'handler' => $handler];
     }
 
-    // Other Router properties and methods
+
+
+    public function dispatch($method, $path)
+    {
+
+        foreach ($this->routes as $route) {
+
+            if ($route['method'] === $method && $route['path'] === $path) {
+
+                return call_user_func($route['handler']);
+            }
+        }
+
+
+
+        if ($this->notFoundHandler) {
+
+            return call_user_func($this->notFoundHandler);
+        }
+
+
+
+        http_response_code(404);
+
+        echo '404 Not Found';
+    }
+
+
+
+    public function setNotFoundHandler($handler)
+    {
+
+        $this->notFoundHandler = $handler;
+    }
 }

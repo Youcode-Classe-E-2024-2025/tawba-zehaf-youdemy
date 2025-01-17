@@ -1,5 +1,6 @@
 <?php
-
+require_once __DIR__ . '/src/Controllers/HomeController.php';
+require_once'config\Database.php';
 // Database configuration
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'youdemy');

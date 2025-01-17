@@ -1,46 +1,55 @@
 <?php
-// Démarrage de la session
+// Start session
 session_start();
 
-// Chargement des fichiers nécessaires
-require_once __DIR__ . '/src/Router.php';
+// Autoload classes (consider using Composer in the future)
+// spl_autoload_register(function ($class) {
+//     $class = str_replace('Youdemy\\', '', $class);
+//     $file = __DIR__ . '/src/' . str_replace('\\', '/', $class) . '.php';
+//     if (file_exists($file)) {
+//         require_once $file;
+//     }
+// });
+
+// Load configuration
 require_once __DIR__ . '/config/Database.php';
-require_once __DIR__ . '/src/Controllers/AuthController.php';
-require_once __DIR__ . '/src/Models/User.php';
 
-// Initialisation du Router
-$router = new Router(__DIR__ . '/src/Views', 'home', '404', __DIR__ . '/src/Controllers');
+// Initialize Router
+$router = new Router();
 
-// Récupération de l'action demandée
-$action = $_GET['action'] ?? null;
+// Define routes
+$router->get('/', function() {
+    require_once __DIR__ . '/src/Views/home_view.php';
+});
 
-// Traitement des actions
-if ($action) {
-    $authController = new AuthController();
-    
-    switch ($action) {
-        case 'login':
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $authController->login();
-            }
-            break;
-            
-        case 'register':
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $authController->register();
-            }
-            break;
-            
-        case 'logout':
-            $authController->logout();
-            break;
-            
-        default:
-            // Action non reconnue, redirection vers la page d'accueil
-            header('Location: index.php');
-            exit;
-    }
-}
+$router->get('/login', function() {
+    require_once __DIR__ . '/src/Views/login_view.php';
+});
 
-// Chargement de la vue appropriée
-$router->view();
+$router->post('/login', function() {
+    $controller = new AuthController();
+    $controller->login();
+});
+
+$router->get('/register', function() {
+    require_once __DIR__ . '/src/Views/register_view.php';
+});
+
+$router->post('/register', function() {
+    $controller = new AuthController();
+    $controller->register();
+});
+
+$router->get('/logout', function() {
+    $controller = new AuthController();
+    $controller->logout();
+});
+
+// Handle 404 errors
+$router->setNotFoundHandler(function() {
+    http_response_code(404);
+    require_once __DIR__ . '/src/Views/404_view.php';
+});
+
+// Dispatch the request
+$router->dispatch();

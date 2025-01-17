@@ -1,5 +1,6 @@
 <?php
-require_once 'src\Repository\TagRepository.php';
+require_once 'src/Repository/TagRepository.php';
+use App\Repository\TagRepository;
 class CourseService
 {
     private CourseRepository $courseRepository;

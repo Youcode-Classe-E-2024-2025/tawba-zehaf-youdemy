@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__ . '/src/Router.php';
+require_once 'src/Router.php';
 
 // Démarrage de la session
-session_start();
+// session_start();
 
 // Initialisation du Router
 $router = new Router();
@@ -446,21 +446,21 @@ $router = new Router();
     </footer>
 
     <script>
-    // Toggle mobile menu
-    document.getElementById('mobileMenuButton').addEventListener('click', () => {
-        const mobileMenu = document.getElementById('mobileMenu');
-        mobileMenu.classList.toggle('hidden');
-    });
+        // Toggle mobile menu
+        document.getElementById('mobileMenuButton').addEventListener('click', () => {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        });
 
-    // Sticky header shadow
-    window.addEventListener('scroll', () => {
-        const nav = document.querySelector('nav');
-        if (window.scrollY > 0) {
-            nav.classList.add('shadow-md');
-        } else {
-            nav.classList.remove('shadow-md');
-        }
-    });
+        // Sticky header shadow
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 0) {
+                nav.classList.add('shadow-md');
+            } else {
+                nav.classList.remove('shadow-md');
+            }
+        });
     </script>
 </body>
 

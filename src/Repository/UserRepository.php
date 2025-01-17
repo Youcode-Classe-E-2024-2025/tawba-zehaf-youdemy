@@ -20,7 +20,8 @@ class UserRepository {
     public function create($user) {
         $query = "INSERT INTO users (name, email, password, role, created_at, updated_at) 
                   VALUES (:name, :email, :password, :role, :created_at, :updated_at)";
-        return $this->db->query($query, $user)->lastInsertId();
+        $this->db->query($query, $user);
+        return $this->db->lastInsertId();
     }
 
     public function update($user) {
