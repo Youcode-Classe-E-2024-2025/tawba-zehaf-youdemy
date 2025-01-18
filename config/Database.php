@@ -1,11 +1,16 @@
 <?php
 
+namespace Youdemy\Config;
+
+use PDO;
+use PDOException;
+
 class Database {
 
     private static $instance = null;
 
     private $connection;
-private $pdo;
+    private $pdo;
 
     private function __construct() {
 
@@ -47,8 +52,17 @@ private $pdo;
             return $this->connection;
     
         }
+        public function commit(): void {
+
+            $this->pdo->commit();
+    
+        }
+        public function rollBack(): void {
+
+            $this->pdo->rollBack();
+    
+        }
         public function lastInsertId() {
             return $this->pdo->lastInsertId();
         }
     }
-    

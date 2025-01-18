@@ -1,10 +1,14 @@
 <?php
 
+namespace Youdemy\Controllers;
+use Youdemy\Models\Entity\Course;
+use Youdemy\Repository\CourseRepository;
 class CourseController {
     private $courseModel;
 
     public function __construct() {
-        $this->courseModel = new Course();
+        $db = new \PDO('mysql:host=localhost;dbname=youdemy', 'username', 'password');
+        $this->courseModel = new Course($db);
     }
 
     public function index()

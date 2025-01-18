@@ -9,7 +9,12 @@ class Review
     private int $courseId;
     private int $rating;
     private string $comment;
+
     private \DateTime $createdAt;
+
+    private ?\DateTime $updatedAt = null;
+
+    private ?string $userName = null;
 
     public function __construct(int $userId, int $courseId, int $rating, string $comment)
     {
@@ -59,4 +64,43 @@ class Review
     {
         return $this->createdAt;
     }
+    public function setId(int $id): void {
+
+        $this->id = $id;
+
+    }
+    public function setCreatedAt(\DateTime $createdAt): void {
+
+        $this->createdAt = $createdAt;
+
+    }
+    public function setCourseId(int $courseId): void {
+
+        $this->courseId = $courseId;
+
+    }
+    public function setUserId(int $userId): void {
+
+        $this->userId = $userId;
+    }
+    public function setUpdatedAt(?\DateTime $updatedAt): void {
+
+        $this->updatedAt = $updatedAt;
+
+    }
+
+    public function setUserName(string $userName): void {
+
+        $this->userName = $userName;
+
+    }
+
+
+
+    public function getUserName(): ?string {
+
+        return $this->userName;
+
+    }
+
 }

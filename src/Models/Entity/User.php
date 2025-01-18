@@ -38,6 +38,11 @@ class User
     /**
      * @return int
      */
+    public function getName(): string {
+
+        return $this->username;
+
+    }
     public function getId(): int
     {
         return $this->id;
@@ -55,12 +60,12 @@ class User
      * @param string $username
      * @throws \InvalidArgumentException If username is invalid
      */
-    public function setUsername(string $username): void
-    {
-        $this->validateUsername($username);
-        $this->username = $username;
-        $this->updateTimestamp();
-    }
+    // public function setUsername(string $username): void
+    // {
+    //     $this->validateUsername($username);
+    //     $this->username = $username;
+    //     $this->updateTimestamp();
+    // }
 
     /**
      * @return string
@@ -210,4 +215,56 @@ class User
             throw new \InvalidArgumentException('Password must be at least 8 characters long');
         }
     }
+
+
+
+    public function setId(int $id): void {
+
+        $this->id = $id;
+
+    }
+    
+    
+    
+    
+        public function setCreatedAt(\DateTime $createdAt): void {
+    
+            $this->createdAt = $createdAt;
+    
+        }
+    
+    
+        public function setUpdatedAt(\DateTime $updatedAt): void {
+
+            $this->updatedAt = $updatedAt;
+    
+        }
+        public function setUsername(string $username): void {
+
+            $this->username = $username;
+            $this->updateTimestamp();
+        }    
+        public function setName($username): void {
+
+            $this->username = $username;}
+        // public function setName(string $name): void {
+
+        //     $this->name = $name;
+    
+        // }
+
+    // public function setName(string $name): void {
+
+    //     $this->name = $name;
+
+    // }
+    // public function setName($name): void {
+
+    //     $this->name = $name;
+
+    // }
+
+  
 }
+
+    

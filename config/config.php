@@ -1,4 +1,9 @@
 <?php
+namespace Youdemy;
+
+use \PDOException;
+use \PDO;
+
 // Database configuration
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'youdemy');
@@ -27,11 +32,11 @@ ini_set('session.cookie_lifetime', 86400); // 24 hours
 ini_set('session.gc_maxlifetime', 86400); // 24 hours
 
 // Error reporting
-if (APP_ENV === 'development') {
+if (APP_ENV == 'development') {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
-    error_reporting(0);
+    error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
     ini_set('display_errors', 0);
 }
 

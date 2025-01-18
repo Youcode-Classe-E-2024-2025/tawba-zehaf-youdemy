@@ -1,129 +1,149 @@
 <?php
 
-namespace Youdemy\Models\Repository;
+namespace Youdemy\Repository;
 
-use PDO;
+use Youdemy\Config\Database;
 use Youdemy\Models\Entity\Tag;
+use PDOException;
+use DateTime;
 
-class TagRepository
-{
-    private PDO $db;
 
-    public function __construct(PDO $db)
-    {
+  
+
+class TagRepository {
+    private Database $db;
+
+    public function __construct(Database $db) {
         $this->db = $db;
     }
 
-    /**
-     * Find a tag by its ID
-     */
-    public function find(int $id): ?Tag
-    {
-        $stmt = $this->db->prepare('SELECT * FROM tags WHERE id = :id');
-        $stmt->execute(['id' => $id]);
-        
-        $tagData = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$tagData) {
+    public function save(Tag $tag): void {
+        try {
+            if ($tag->getId()) {
+                $this->update($tag);
+            } else {
+                $this->create($tag);
+            }
+        } catch (PDOException $e) {
+            throw new \RuntimeException('Failed to save tag: ' . $e->getMessage());
+        }
+    }
+
+    public function findById(int $id): ?Tag {
+        $query = "SELECT * FROM tags WHERE id = :id";
+        $result = $this->db->query($query, ['id' => $id])->fetch();
+
+        if (!$result) {
             return null;
         }
-        
-        return $this->createTagFromData($tagData);
+
+        return $this->hydrateTag($result);
     }
 
-    /**
-     * Find all tags
-     * @return Tag[]
-     */
-    public function findAll(): array
-    {
-        $stmt = $this->db->query('SELECT * FROM tags ORDER BY name');
-        $tagsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        return array_map([$this, 'createTagFromData'], $tagsData);
+    public function findAll(): array {
+        $query = "SELECT * FROM tags ORDER BY name";
+        $results = $this->db->query($query)->fetchAll();
+        return array_map([$this, 'hydrateTag'], $results);
     }
 
-    /**
-     * Find tags by name (partial match)
-     * @return Tag[]
-     */
-    public function findByName(string $name): array
-    {
-        $stmt = $this->db->prepare('SELECT * FROM tags WHERE name LIKE :name');
-        $stmt->execute(['name' => "%$name%"]);
-        $tagsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        return array_map([$this, 'createTagFromData'], $tagsData);
+    public function findByName(string $name): array {
+        $query = "SELECT * FROM tags WHERE name LIKE :name";
+        $results = $this->db->query($query, ['name' => "%$name%"])->fetchAll();
+        return array_map([$this, 'hydrateTag'], $results);
     }
 
-    /**
-     * Save a new tag or update an existing one
-     */
-    public function save(Tag $tag): Tag
-    {
-        if ($tag->getId()) {
-            return $this->update($tag);
+    public function delete(int $id): void {
+        try {
+            $query = "DELETE FROM tags WHERE id = :id";
+            $result = $this->db->query($query, ['id' => $id])->rowCount();
+            
+            if ($result === 0) {
+                throw new \RuntimeException('Tag not found');
+            }
+        } catch (PDOException $e) {
+            throw new \RuntimeException('Failed to delete tag: ' . $e->getMessage());
+        }
+    }
+
+    public function findByCourse(int $courseId): array {
+        $query = "SELECT t.* 
+                 FROM tags t
+                 JOIN course_tags ct ON t.id = ct.tag_id
+                 WHERE ct.course_id = :course_id
+                 ORDER BY t.name";
+        
+        $results = $this->db->query($query, ['course_id' => $courseId])->fetchAll();
+        return array_map([$this, 'hydrateTag'], $results);
+    }
+
+    private function create(Tag $tag): void {
+        $now = new DateTime();
+        $params = [
+            'name' => $tag->getName(),
+            'created_at' => $now->format('Y-m-d H:i:s'),
+            'updated_at' => $now->format('Y-m-d H:i:s')
+        ];
+
+        $query = "INSERT INTO tags (name, created_at, updated_at) 
+                 VALUES (:name, :created_at, :updated_at)";
+        
+        $this->db->query($query, $params);
+        $tag->setId($this->db->lastInsertId());
+        $tag->setCreatedAt($now);
+        $tag->setUpdatedAt($now);
+    }
+
+    private function update(Tag $tag): void {
+        $now = new DateTime();
+        $params = [
+            'id' => $tag->getId(),
+            'name' => $tag->getName(),
+            'updated_at' => $now->format('Y-m-d H:i:s')
+        ];
+
+        $query = "UPDATE tags 
+                 SET name = :name,
+                     updated_at = :updated_at
+                 WHERE id = :id";
+
+        $result = $this->db->query($query, $params)->rowCount();
+        
+        if ($result === 0) {
+            throw new \RuntimeException('Tag not found or no changes made');
         }
         
-        return $this->create($tag);
+        $tag->setUpdatedAt($now);
     }
 
-    /**
-     * Delete a tag
-     */
-    public function delete(Tag $tag): void
-    {
-        $stmt = $this->db->prepare('DELETE FROM tags WHERE id = :id');
-        $stmt->execute(['id' => $tag->getId()]);
-    }
-
-    /**
-     * Create a new tag
-     */
-    private function create(Tag $tag): Tag
-    {
-        $stmt = $this->db->prepare('
-            INSERT INTO tags (name, created_at) 
-            VALUES (:name, :created_at)
-        ');
-        
-        $stmt->execute([
-            'name' => $tag->getName(),
-            'created_at' => $tag->getCreatedAt()->format('Y-m-d H:i:s')
-        ]);
-        
-        // Set the ID on the tag object
-        $tag->setId($this->db->lastInsertId());
-        
-        return $tag;
-    }
-
-    /**
-     * Update an existing tag
-     */
-    private function update(Tag $tag): Tag
-    {
-        $stmt = $this->db->prepare('
-            UPDATE tags 
-            SET name = :name 
-            WHERE id = :id
-        ');
-        
-        $stmt->execute([
-            'id' => $tag->getId(),
-            'name' => $tag->getName()
-        ]);
-        
-        return $tag;
-    }
-
-    /**
-     * Create a Tag object from database data
-     */
-    private function createTagFromData(array $data): Tag
-    {
+    private function hydrateTag(array $data): Tag {
         $tag = new Tag($data['name']);
         $tag->setId($data['id']);
-        // Set created_at if you need it
+        $tag->setName($data['name']);
+        $tag->setCreatedAt(new DateTime($data['created_at']));
+        
+        if (isset($data['updated_at'])) {
+            $tag->setUpdatedAt(new DateTime($data['updated_at']));
+        }
+        
         return $tag;
+    }
+    public function findOrCreateByName(string $name)
+
+    {
+
+        $tag = $this->findByName($name);
+
+        if (!$tag) {
+
+            $tag = new Tag($name);
+
+            $tag->setName($name);
+
+            $this->save($tag);
+
+        }
+
+        return $tag;
+
     }
 }

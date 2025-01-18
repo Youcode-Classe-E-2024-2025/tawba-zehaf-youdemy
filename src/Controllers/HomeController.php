@@ -1,10 +1,14 @@
 <?php
-require_once 'src/Models/Course.php';
+namespace Youdemy\Controllers;
+
+use Youdemy\Models\Entity\Course;
+
 class HomeController {
     private $courseModel;
 
     public function __construct() {
-        $this->courseModel = new Course();
+        $db = new \PDO('mysql:host=localhost;dbname=youdemy', 'username', 'password');
+        $this->courseModel = new Course($db);
     }
 
     public function index()
@@ -26,7 +30,7 @@ class HomeController {
         extract($data);
         ob_start();
         require VIEW_PATH . $view;
-        // return ob_get_clean();
+        return ob_get_clean();
     }
 
     private function renderLayout($layout, $data = [])

@@ -29,7 +29,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                 <!-- Email Field -->
-                <div class="mb-4">
+                <div class=" mb-4">
                     <label for="email" class="block text-purple-600 font-medium">Email:</label>
                     <input type="email" id="email" name="email" required
                         class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
