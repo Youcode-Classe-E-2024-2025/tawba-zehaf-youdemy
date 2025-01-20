@@ -1,3 +1,14 @@
+<?php
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Generate CSRF token if it doesn't exist
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +18,7 @@
     <title>Register - Youdemy</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="src\js\validation.js"></script>
+    <script src="src/js/validation.js"></script> <!-- Ensure this path is correct -->
 </head>
 
 <body class="bg-white font-sans">
@@ -17,10 +28,10 @@
             <h1 class="text-3xl font-semibold text-center text-purple-700 mb-6">Register for Youdemy</h1>
 
             <?php if(isset($data['error'])): ?>
-            <div class="text-red-500 text-center mb-4"><?php echo $data['error']; ?></div>
+            <div class="text-red-500 text-center mb-4"><?php echo htmlspecialchars($data['error']); ?></div>
             <?php endif; ?>
 
-            <form action="/register" method="POST" onsubmit="return validateRegistrationForm()">
+            <form action="/users/register" method="POST" onsubmit="return validateRegistrationForm()">
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                 <!-- Username Field -->
