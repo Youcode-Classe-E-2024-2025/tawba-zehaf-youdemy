@@ -79,8 +79,33 @@ class AuthService {
     public function isTeacher(): bool {
         return isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'teacher';
     }
-
+    
     public function isAdmin(): bool {
         return isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
+    } 
+    public function handlePostRequest(): void {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Validate CSRF token
+        if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+            die('Invalid CSRF token');
+        }
+    
+        // Sanitize and validate input
+        $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+        $password = $_POST['password']; // You can also sanitize this if needed
+    
+        // Fetch user from database
+        $user = $this->userRepository->findByEmail($email);
+    
+        if ($user && password_verify($password, $user->getPassword())) {
+            // Password is correct, log the user in
+            $_SESSION['user_id'] = $user->getId();
+            header('Location: /dashboard'); // Redirect to dashboard
+            exit;
+        } else {
+            // Invalid credentials
+            $data['error'] = 'Invalid email or password.';
+        }
+}
     }
 }
