@@ -130,4 +130,38 @@ class CourseService
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    public function getCourses($page, $coursesPerPage = 10) {
+        $offset = ($page - 1) * $coursesPerPage; // Calculate the offset for pagination
+        $stmt = $this->db->getConnection()->prepare('SELECT * FROM courses LIMIT :limit OFFSET :offset');
+        $stmt->bindValue(':limit', $coursesPerPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(); // Return the list of courses
+    }
+
+    public function searchCourses($keyword) {
+        $stmt = $this->db->getConnection()->prepare('SELECT * FROM courses WHERE title LIKE :keyword');
+        $stmt->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR); // Use wildcard for searching
+        $stmt->execute();
+        return $stmt->fetchAll(); // Return the list of matching courses
+    }
+
+    public function getTotalCourses() {
+        $stmt = $this->db->query('SELECT COUNT(*) FROM courses');
+        return $stmt->fetchColumn(); // Return the total number of courses
+    }
+    public function getCourseById($id) {
+        $stmt = $this->db->getConnection()->prepare('SELECT * FROM courses WHERE id = :id');
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public function enrollInCourse($courseId, $userId) {
+        $stmt = $this->db->getConnection()->prepare('INSERT INTO enrollments (course_id, user_id) VALUES (:course_id, :user_id)');
+        $stmt->bindValue(':course_id', $courseId, PDO::PARAM_INT);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
 }
