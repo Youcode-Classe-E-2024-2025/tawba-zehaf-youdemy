@@ -157,7 +157,22 @@ class CourseService
         // return $stmt->fetch(PDO::FETCH_ASSOC);
         return $this->courseRepository->findById($id);
     }
-    
+    public function getAllCourses()
+{
+    // Establish database connection
+    $db = new Database(); // Assuming Database class handles the connection
+    $connection = $db->getConnection(); // Get the connection method
+
+    // Prepare and execute the SQL query
+    $query = "SELECT * FROM courses"; // Replace 'courses' with your actual table name
+    $stmt = $connection->prepare($query);
+    $stmt->execute();
+
+    // Fetch all courses
+    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch as associative array
+
+    return $courses; // Return the array of courses
+}
     public function enrollInCourse($courseId, $userId) {
         $stmt = $this->db->getConnection()->prepare('INSERT INTO enrollments (course_id, user_id) VALUES (:course_id, :user_id)');
         $stmt->bindValue(':course_id', $courseId, PDO::PARAM_INT);
