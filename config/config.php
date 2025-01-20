@@ -18,7 +18,7 @@ define('MODEL_PATH', BASE_PATH . '/src/Models/');
 
 // Application configuration
 define('APP_NAME', 'Youdemy');
-define('APP_URL', 'http://localhost/tawba_zehaf_youdemy');
+define('APP_URL', 'http://localhost/tawba_zehaf_youdemy.');
 define('APP_ENV', 'development');
 
 // Default settings

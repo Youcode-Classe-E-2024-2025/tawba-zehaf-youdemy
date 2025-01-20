@@ -1,13 +1,12 @@
 <?php
 namespace Youdemy\Controllers;
-
 use Youdemy\Models\Entity\Course;
 
 class HomeController {
     private $courseModel;
 
     public function __construct() {
-        $db = new \PDO('mysql:host=localhost;dbname=youdemy', 'username', 'password');
+        $db = new \PDO('mysql:host=localhost;dbname=youdemy', 'root', '');
         $this->courseModel = new Course($db);
     }
 
@@ -29,7 +28,7 @@ class HomeController {
     {
         extract($data);
         ob_start();
-        require VIEW_PATH . $view;
+        require VIEW_PATH . '/' . $view; 
         return ob_get_clean();
     }
 

@@ -1,25 +1,28 @@
 {
-    "name": "tawba/youdemy",
-    "description": "Une plateforme d'apprentissage en ligne moderne",
+    "name": "tawba_zehaf/youdemy",
+    "description": "A simple project for learning purposes",
     "type": "project",
+    "keywords": [
+      "php",
+      "composer",
+      "tutorial"
+    ],
     "require": {
-        "php": ">=7.4",
-        "ext-pdo": "*",
-        "ext-json": "*"
+      "php": ">=7.4"
     },
     "autoload": {
-        "psr-4": {
-            "Youdemy\\": "src/"
-        }
+      "psr-4": {
+        "Youdemy\\": "src/"
+      }
     },
     "authors": [
-        {
-            "name": "Tawba Zehaf",
-            "role": "Developer"
-        }
+      {
+        "name": "Tawba Zehaf",
+        "email": "your-email@example.com"
+      }
     ],
     "minimum-stability": "stable",
-    "require-dev": {
-        "phpunit/phpunit": "^9.5"
-    }
-}
+    "prefer-stable": true
+  }
+  
+  

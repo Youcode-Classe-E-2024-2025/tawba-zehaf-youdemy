@@ -6,16 +6,18 @@ use PDO;
 use PDOException;
 
 class Database {
+    private $host = 'localhost';
+    private $dbname = 'youdemy';
+    private $username = 'root'; 
+    private $password = '';
 
     private static $instance = null;
 
     private $connection;
     private $pdo;
 
-    private function __construct() {
-
-        $this->connection = new PDO("mysql:host=localhost;dbname=yourdbname", "username", "password");
-
+    public function __construct() {
+        $this->connection = new PDO("mysql:host=$this->host;dbname=$this->dbname", $this->username, $this->password);
     }
 
 

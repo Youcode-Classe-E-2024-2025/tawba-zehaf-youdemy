@@ -1,7 +1,7 @@
 <?php 
 namespace Youdemy\Repository;
 
-use Youdemy\Config\Database; 
+use Youdemy\config\Database; 
 use Youdemy\Models\Entity\Course;
 use PDOException;
 use DateTime;

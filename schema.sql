@@ -43,7 +43,7 @@ CREATE TABLE courses (
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
     FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
+ALTER TABLE courses ADD COLUMN featured TINYINT(1) DEFAULT 0;
 -- Table de relation cours-tags (many-to-many)
 CREATE TABLE course_tags (
     course_id INT,
