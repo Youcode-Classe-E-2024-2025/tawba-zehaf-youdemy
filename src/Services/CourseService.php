@@ -163,5 +163,13 @@ class CourseService
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
         $stmt->execute();
     }
-
+    public function addCourse($title, $description, $contentPath, $tags, $category) {
+        $stmt = $this->db->getConnection()->prepare('INSERT INTO courses (title, description, content, tags, category) VALUES (:title, :description, :content, :tags, :category)');
+        $stmt->bindValue(':title', $title, PDO::PARAM_STR);
+        $stmt->bindValue(':description', $description, PDO::PARAM_STR);
+        $stmt->bindValue(':content', $contentPath, PDO::PARAM_STR); // Save the file path
+        $stmt->bindValue(':tags', $tags, PDO::PARAM_STR);
+        $stmt->bindValue(':category', $category, PDO::PARAM_STR);
+        $stmt->execute();
+    }
 }

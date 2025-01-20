@@ -50,6 +50,39 @@ class CourseController {
         header('Location: /my-courses'); // Redirect to the user's courses page
         exit;
     }
+    public function create() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validate and sanitize input data
+            $title = $_POST['title'];
+            $description = $_POST['description'];
+            $tags = $_POST['tags'];
+            $category = $_POST['category'];
+    
+            // Handle file upload
+            if (isset($_FILES['content']) && $_FILES['content']['error'] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['content']['tmp_name'];
+                $fileName = $_FILES['content']['name'];
+                $fileSize = $_FILES['content']['size'];
+                $fileType = $_FILES['content']['type'];
+    
+                // Specify the upload directory
+                $uploadFileDir = './uploads/';
+                $destPath = $uploadFileDir . $fileName;
+    
+                // Move the file to the upload directory
+                if (move_uploaded_file($fileTmpPath, $destPath)) {
+                    // Save course details along with the file path
+                    $this->courseService->addCourse($title, $description, $destPath, $tags, $category);
+                    header('Location: /courses'); // Redirect to the course list
+                    exit;
+                } else {
+                    // Handle file upload error
+                    echo 'There was an error moving the uploaded file.';
+                }
+            }
+        }
+        require_once __DIR__ . '/../Views/course_create.php'; // Show the form again if not POST
+    }
     private function notFound()
     {
         http_response_code(404);
