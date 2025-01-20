@@ -3,37 +3,30 @@
 namespace Youdemy\Controllers;
 use Youdemy\Models\Entity\Course;
 use Youdemy\Repository\CourseRepository;
+<?php
+
+namespace Youdemy\Controllers;
+
+use Youdemy\Services\CourseService;
+
 class CourseController {
-    private $courseModel;
+    private $courseService;
 
-    public function __construct() {
-        $db = new \PDO('mysql:host=localhost;dbname=youdemy', 'username', 'password');
-        $this->courseModel = new Course($db);
+    public function __construct(CourseService $courseService) {
+        $this->courseService = $courseService;
     }
 
-    public function index()
-    {
-        $courses = $this->courseModel->getAllCourses();
-        $this->render('courses/index.php', ['title' => 'All Courses', 'courses' => $courses]);
+    public function index($page = 1) {
+        // Logic to fetch courses with pagination
+        $courses = $this->courseService->getCourses($page);
+        require_once __DIR__ . '/../Views/courses.php';
     }
 
-    public function show($id)
-    {
-        $course = $this->courseModel->getCourseById($id);
-        
-        if (!$course) {
-            $this->notFound();
-        }
-        
-        $this->render('courses/show.php', ['title' => $course['title'], 'course' => $course]);
+    public function search($keyword) {
+        // Logic to search courses by keyword
+        $courses = $this->courseService->searchCourses($keyword);
+        require_once __DIR__ . '/../Views/courses.php';
     }
-
-    private function render($view, $data = [])
-    {
-        extract($data);
-        require VIEW_PATH . $view;
-    }
-
     private function notFound()
     {
         http_response_code(404);
@@ -41,3 +34,5 @@ class CourseController {
         exit;
     }
 }
+
+   
