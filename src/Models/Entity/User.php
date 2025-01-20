@@ -8,6 +8,7 @@ class User
     private string $password;
     private string $role;
     private bool $isActive;
+    private bool $validated;
     private \DateTime $createdAt;
     private \DateTime $updatedAt;
 
@@ -247,6 +248,11 @@ class User
         public function setName($username): void {
 
             $this->username = $username;}
+            
+    public function isValidated(): bool {
+
+        return $this->validated;
+    }
         // public function setName(string $name): void {
 
         //     $this->name = $name;

@@ -35,7 +35,7 @@ ini_set('session.gc_maxlifetime', 86400); // 24 hours
 if (APP_ENV == 'development') {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
-} else {
+} elseif (APP_ENV == 'production') {
     error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
     ini_set('display_errors', 0);
 }

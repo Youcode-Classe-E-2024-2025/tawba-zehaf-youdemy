@@ -15,10 +15,8 @@ $router = new Router();
 // Add routes
 $router->get('/', 'Youdemy\Controllers\HomeController@index');
 $router->get('/courses', 'Youdemy\Controllers\CourseController@index');
-$router->get('/courses/:id', 'Youdemy\Controllers\CourseController@show');
-$router->get('/register', 'Youdemy\Controllers\AuthController@register');
+$router->get('/courses/{id}', 'Youdemy\Controllers\CourseController@show');
 $router->post('/register', 'Youdemy\Controllers\AuthController@register');
-$router->get('/login', 'Youdemy\Controllers\AuthController@login');
 $router->post('/login', 'Youdemy\Controllers\AuthController@login');
 $router->get('/logout', 'Youdemy\Controllers\AuthController@logout');
 

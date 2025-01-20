@@ -9,6 +9,7 @@ use Youdemy\Models\Entity\Course;
 use Youdemy\Repository\CourseRepository;
 use Youdemy\Repository\TagRepository;
 use Youdemy\Config\Database;
+use PDO;
 
 class CourseService
 {
@@ -104,5 +105,29 @@ class CourseService
     public function getCoursesByTeacher(int $teacherId): array
     {
         return $this->courseRepository->findByTeacherId($teacherId);
+    }
+    public function getRecommendedCourses(int $userId): array {
+        $stmt = $this->db->getConnection()->prepare("SELECT courses.* FROM courses
+            JOIN user_courses ON courses.id = user_courses.course_id
+            WHERE user_courses.user_id = :userId
+            ORDER BY courses.rating DESC");
+        $stmt->bindParam(':userId', $userId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getAllCategories(): array {
+        $stmt = $this->db->getConnection()->prepare("SELECT * FROM categories");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getTeacherStats(int $teacherId): array {
+        $stmt = $this->db->getConnection()->prepare("
+            SELECT COUNT(*) as course_count, AVG(courses.rating) as average_rating
+            FROM courses
+            WHERE teacher_id = :teacherId
+        ");
+        $stmt->bindParam(':teacherId', $teacherId);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

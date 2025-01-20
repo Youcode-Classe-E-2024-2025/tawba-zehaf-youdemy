@@ -11,7 +11,6 @@ class StudentController {
     private CourseService $courseService;
     private AuthService $authService;
     private EnrollmentService $enrollmentService;
-
     public function __construct(
         CourseService $courseService,
         AuthService $authService,
@@ -57,7 +56,7 @@ class StudentController {
             $page = max(1, (int)($_GET['page'] ?? 1));
             $limit = 12;
 
-            $courses = $this->courseService->getPublishedCourses($filters, $page, $limit);
+            $courses = $this->courseService->getPublishedCourses();
             $categories = $this->courseService->getAllCategories();
 
             $this->render('student/browse_courses.php', [

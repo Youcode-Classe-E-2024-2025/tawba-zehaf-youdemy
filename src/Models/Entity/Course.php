@@ -2,6 +2,7 @@
 namespace Youdemy\Models\Entity;
 
 use DateTime;
+use PDO;
 use PDOException;
 
 class Course {
@@ -14,11 +15,12 @@ class Course {
     private float $price;
     private ?DateTime $createdAt = null;
     private ?DateTime $updatedAt = null;
+    private $published;
     private bool $isPublished;
     private $db;
     private array $tags = [];
     
-
+private ?float $rating = null;
     public function __construct($db) {
         $this->db = $db;
     }
@@ -213,11 +215,11 @@ class Course {
 
         $stmt = $this->db->prepare('SELECT * FROM courses WHERE id = :id');
 
-        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
         $stmt->execute();
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
 
     }
     
@@ -227,7 +229,7 @@ class Course {
     
             $stmt = $this->db->query("SELECT * FROM courses WHERE featured = 1");
     
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
     
         }
     
@@ -252,7 +254,58 @@ class Course {
                 $this->tags = [];
         
             }
-        
+            public function isPublished(): bool {
+                $stmt = $this->db->prepare("SELECT published FROM courses WHERE id = :courseId");
+                $stmt->bindParam(':courseId', $this->id); // Assuming $this->id is the course ID
+                $stmt->execute();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $result['published'] ?? false; // Return false if not found
+            }
+
+
+
+    // existing properties and methods
+
+
+
+    public function setRating($rating): void {
+
+        $this->rating = $rating;
+
+    }
+
+
+
+    public function getRating() {
+
+        return $this->rating;
+
+    }
+   
+   
+    
+    
+    
+        // existing properties and methods
+    
+    
+    
+        public function setPublished(bool $published): void {
+    
+            $this->published = $published;
+    
         }
+    
+    
+    
+        public function getPublished(): bool {
+    
+            return $this->published;
+    
+        }
+    
+    }
+
+        
     
     

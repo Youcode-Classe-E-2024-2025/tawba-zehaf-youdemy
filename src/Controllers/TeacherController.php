@@ -90,8 +90,7 @@ class TeacherController {
                     $courseData['description'],
                     $courseData['content'],
                     $courseData['category_id'],
-                    $courseData['tags'],
-                    $courseData['price']
+                    $courseData['tags']
                 );
                 $this->redirect('/teacher/courses/' . $courseId);
             } catch (Exception $e) {

@@ -3,6 +3,7 @@
 namespace Youdemy\Services;
 
 use DateTime;
+use PDO;
 use PDOException;
 use RuntimeException;
 use Youdemy\Config\Database;
@@ -226,5 +227,10 @@ class EnrollmentService {
         } catch (PDOException $e) {
             throw new RuntimeException('Failed to update overall progress: ' . $e->getMessage());
         }
+    }
+    public function getStudentProgress($studentId) {
+        $query = "SELECT progress FROM students WHERE id = :studentId";
+        $result = $this->db->query($query, ['studentId' => $studentId])->fetch(PDO::FETCH_ASSOC);
+        return $result;
     }
 }

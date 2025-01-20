@@ -91,21 +91,7 @@ class CourseRepository {
         }
     }
 
-    private function hydrateCourse(array $data): Course {
-        $course = new Course($this->db);
-        $course->setId($data['id']);
-        $course->setTitle($data['title']);
-        $course->setDescription($data['description']);
-        $course->setContent($data['content']);
-        $course->setTeacherId($data['teacher_id']);
-        $course->setCategoryId($data['category_id']);
-        $course->setPrice($data['price']);
-        $course->setCreatedAt(new DateTime($data['created_at']));
-        $course->setUpdatedAt(new DateTime($data['updated_at']));
-        
-        return $course;
-    }
-
+  
     public function delete($id) {
         $query = "DELETE FROM courses WHERE id = :id";
         return $this->db->query($query, ['id' => $id])->rowCount();
@@ -325,4 +311,24 @@ class CourseRepository {
             throw new \RuntimeException('Failed to fetch enrollment progress: ' . $e->getMessage());
         }
     }
+    public function hydrateCourse(array $data): Course {
+        $course = new Course($this->db);
+        $course->setId($data['id']);
+        $course->setTitle($data['title']);
+        $course->setDescription($data['description']);
+        $course->setPublished($data['published']);
+        $course->setRating($data['rating']);
+        $course->setContent($data['content']);
+        $course->setTeacherId($data['teacher_id']);
+        $course->setCategoryId($data['category_id']);
+        $course->setPrice($data['price']);
+        $course->setCreatedAt(new DateTime($data['created_at']));
+        $course->setUpdatedAt(new DateTime($data['updated_at']));
+        
+    
+        return $course;
+    }
+
+
+ 
 }

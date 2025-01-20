@@ -1,6 +1,5 @@
 <?php
 namespace Youdemy\Controllers;
-
 use Youdemy\Models\Entity\User;
 
 class AuthController
