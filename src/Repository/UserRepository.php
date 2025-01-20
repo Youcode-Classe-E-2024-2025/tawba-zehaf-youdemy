@@ -135,13 +135,168 @@ class UserRepository {
         }
         
         return $user;}
+        
+        
+            public function getTotalCount(): int {
+        
+                $query = "SELECT COUNT(*) as total FROM users";
+        
+                $result = $this->db->query($query)->fetch();
+        
+                return (int) $result['total'];
+        
+            }
+        
+            
+            
+            
+                public function countActiveAdmins(): int {
+            
+                    $query = "SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = 1";
+            
+                    return (int) $this->db->query($query)->fetchColumn();
+            
+                }
+    
+                
+                
+                    public function getAllUsers(int $page, int $perPage, ?string $role = null): array {
+                
+                        $offset = ($page - 1) * $perPage;
+                
+                        $query = "SELECT * FROM users";
+                
+                        $params = [];
+                
+                
+                
+                        if ($role !== null) {
+                
+                            $query .= " WHERE role = :role";
+                
+                            $params['role'] = $role;
+                
+                        }
+                
+                
+                
+                        $query .= " LIMIT :limit OFFSET :offset";
+                
+                        $params['limit'] = $perPage;
+                
+                        $params['offset'] = $offset;
+                
+                
+                
+                        return $this->db->query($query, $params)->fetchAll();
+                
+                    }
+                
+                    
+                    
+                        public function getNewUsersByDateRange(DateTime $startDate, DateTime $endDate): array {
+                    
+                            $query = "SELECT * FROM users WHERE created_at BETWEEN :start_date AND :end_date";
+                    
+                            $params = [
+                    
+                                'start_date' => $startDate->format('Y-m-d H:i:s'),
+                    
+                                'end_date' => $endDate->format('Y-m-d H:i:s')
+                    
+                            ];
+                    
+                            return $this->db->query($query, $params)->fetchAll();
+                    
+                        }
+                   
+
+
+    public function deleteInactiveUsers(DateTime $cutoffDate): void {
+
+        $query = "DELETE FROM users WHERE last_active < :cutoff_date AND is_active = 0";
+
+        $this->db->query($query, ['cutoff_date' => $cutoffDate->format('Y-m-d H:i:s')]);
+
+    }
+    
+        public function count(): int {
+    
+            $query = "SELECT COUNT(*) as total FROM users";
+    
+            $result = $this->db->query($query)->fetch();
+    
+            return (int) $result['total'];
+    
+        }
+
+    public function countByRole(string $role): int {
+
+        $query = "SELECT COUNT(*) as count FROM users WHERE role = :role";
+
+        $result = $this->db->query($query, ['role' => $role])->fetch();
+
+        return (int) $result['count'];
+
+    }
+   
+    
+    
+        public function countNewUsersSince(DateTime $since): int {
+    
+            $query = "SELECT COUNT(*) as total FROM users WHERE created_at >= :since";
+    
+            $params = ['since' => $since->format('Y-m-d H:i:s')];
+    
+            return (int) $this->db->query($query, $params)->fetch()['total'];
+    
+        }
+        
+
+    public function countActiveTeachersSince(DateTime $startDate, DateTime $endDate): int {
+
+        $query = "SELECT COUNT(*) FROM users WHERE role = 'teacher' AND last_active BETWEEN :start_date AND :end_date";
+
+        $params = [
+
+            'start_date' => $startDate->format('Y-m-d H:i:s'),
+
+            'end_date' => $endDate->format('Y-m-d H:i:s')
+
+        ];
+
+        return (int) $this->db->query($query, $params)->fetchColumn();
+
+    }
+   
+    
+    
+        public function countRetainedTeachersSince(DateTime $since): int {
+    
+            $query = "SELECT COUNT(*) FROM users WHERE role = 'teacher' AND last_active >= :since";
+    
+            $params = ['since' => $since->format('Y-m-d H:i:s')];
+    
+            return (int) $this->db->query($query, $params)->fetchColumn();
+    
+        }
+    
+
+    public function countActiveStudentsSince(DateTime $since): int {
+
+        $query = "SELECT COUNT(*) FROM users WHERE role = 'student' AND last_active >= :since";
+
+        $params = ['since' => $since->format('Y-m-d H:i:s')];
+
+        return (int) $this->db->query($query, $params)->fetchColumn();
+
+    }
+
+}
+
+    
     
 
 
-    // public function create($user) {
-    //     $query = "INSERT INTO users (name, email, password, role, created_at, updated_at) VALUES (:name, :email, :password, :role, :created_at, :updated_at)";
-    //     $this->db->query($query, $user);
-    //     return $this->db->lastInsertId();
-    // }
-
-}
+    
+    

@@ -39,7 +39,7 @@ class AdminService {
     // User Management
     public function getAllUsers(int $page = 1, int $perPage = 10, ?string $role = null): array {
         try {
-            return $this->userRepository->findAll($page, $perPage, $role);
+            return $this->userRepository->getAllUsers($page, $perPage, $role);
         } catch (PDOException $e) {
             throw new \RuntimeException('Failed to fetch users: ' . $e->getMessage());
         }
@@ -378,8 +378,8 @@ class AdminService {
                 'total_users' => $this->userRepository->getTotalCount(),
                 'total_courses' => $this->courseRepository->getTotalCourses(),
                 'total_enrollments' => $this->enrollmentRepository->getTotalCount(),
-                'total_reviews' => $this->reviewRepository->getTotalCount(),
-                'average_course_rating' => $this->reviewRepository->getAverageRating()
+                'total_reviews' => $this->reviewRepository->count(),
+                'average_course_rating' => $this->reviewRepository->getOverallAverageRating(),
             ];
         } catch (PDOException $e) {
             throw new \RuntimeException('Failed to fetch dashboard stats: ' . $e->getMessage());
@@ -456,7 +456,7 @@ class AdminService {
             );
 
             // Get course statistics
-            $totalCourses = $this->courseRepository->count();
+            $totalCourses = $this->courseRepository->getTotalCourses();
             $publishedCourses = $this->courseRepository->countPublished();
             $pendingCourses = $this->courseRepository->countPending();
             $newCoursesThisMonth = $this->courseRepository->countNewCoursesSince(
@@ -464,15 +464,16 @@ class AdminService {
             );
 
             // Get enrollment statistics
-            $totalEnrollments = $this->enrollmentRepository->count();
+            $totalEnrollments = $this->enrollmentRepository->getTotalCount();
             $activeEnrollments = $this->enrollmentRepository->countActive();
-            $enrollmentsThisMonth = $this->enrollmentRepository->countEnrollmentsSince(
-                (new DateTime())->modify('first day of this month')
+            $enrollmentsThisMonth = $this->enrollmentRepository->getNewEnrollmentsByDateRange(
+                (new DateTime())->modify('first day of this month'),
+                new DateTime()
             );
 
             // Get review statistics
             $totalReviews = $this->reviewRepository->count();
-            $averageRating = $this->reviewRepository->getAverageRating();
+            $averageRating = $this->reviewRepository->getOverallAverageRating();
             $reviewsThisMonth = $this->reviewRepository->countReviewsSince(
                 (new DateTime())->modify('first day of this month')
             );
@@ -569,10 +570,9 @@ class AdminService {
 
     private function calculateStudentRetentionRate(): float {
         $activeLastMonth = $this->userRepository->countActiveStudentsSince(
-            (new DateTime())->modify('-2 months'),
-            (new DateTime())->modify('-1 month')
+            (new DateTime())->modify('-2 months')
         );
-        $stillActiveThisMonth = $this->userRepository->countRetainedStudentsSince(
+        $stillActiveThisMonth = $this->userRepository->countActiveStudentsSince(
             (new DateTime())->modify('-1 month')
         );
         

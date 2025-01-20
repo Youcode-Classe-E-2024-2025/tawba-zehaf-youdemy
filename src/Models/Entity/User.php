@@ -11,7 +11,8 @@ class User
     private bool $validated;
     private \DateTime $createdAt;
     private \DateTime $updatedAt;
-
+    private array $statusChangeLogs = [];
+    
     /**
      * User constructor.
      * 
@@ -249,28 +250,79 @@ class User
 
             $this->username = $username;}
             
-    public function isValidated(): bool {
+    // public function isValidated(): bool {
 
-        return $this->validated;
-    }
-        // public function setName(string $name): void {
-
-        //     $this->name = $name;
-    
-        // }
-
-    // public function setName(string $name): void {
-
-    //     $this->name = $name;
-
+    //     return $this->validated;
     // }
-    // public function setName($name): void {
-
-    //     $this->name = $name;
-
-    // }
-
   
-}
+    
+  
+    
+        private bool $isValidated;
+    
+    
+    
+        public function setIsValidated(bool $isValidated): void {
+    
+            $this->isValidated = $isValidated;
+    
+        }
+    
+    
+    
+        public function isValidated(): bool {
+    
+            return $this->isValidated;
+    
+        }
+        public function addStatusChangeLog(string $log): void {
+    
+            $this->statusChangeLogs[] = $log;
+    
+        }
+
+            private array $validationLogs = [];
+        
+        
+        
+            public function addValidationLog(string $log): void {
+        
+                $this->validationLogs[] = $log;
+        
+            }
+    
+            public function getValidationLogs(): array {
+        
+                return $this->validationLogs;
+        
+            }
+            
+            
+            
+                private ?\DateTime $validatedAt = null;
+            
+            
+            
+                public function setValidatedAt(\DateTime $validatedAt): void {
+            
+                    $this->validatedAt = $validatedAt;
+            
+                }
+            
+            
+            
+                public function getValidatedAt(): ?\DateTime {
+            
+                    return $this->validatedAt;
+            
+                }
+            
+            }
+            
+    
+    
+    
+  
+
 
     

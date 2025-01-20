@@ -295,7 +295,7 @@ class CourseRepository {
             ])->fetch();
 
             if (!$result) {
-                return null;
+                return [];
             }
 
             $course = $this->hydrateCourse($result);
@@ -328,7 +328,88 @@ class CourseRepository {
     
         return $course;
     }
+        public function findByStatus(bool $isPublished): array {
+    
+            $query = "SELECT * FROM courses WHERE is_published = :is_published";
+    
+            $params = ['is_published' => $isPublished ? 1 : 0];
+    
+            return $this->db->query($query, $params)->fetchAll();
+    
+        }
+    
+            public function getCourseCountByCategory(): array {
+        
+                $query = "SELECT category_id, COUNT(*) as course_count FROM courses GROUP BY category_id";
+        
+                return $this->db->query($query)->fetchAll();
+        
+            }
 
 
+    public function getRevenueByDateRange(DateTime $startDate, DateTime $endDate): array {
+
+        $query = "SELECT SUM(amount) as total_revenue, DATE(created_at) as date
+
+                  FROM enrollments
+
+                  WHERE created_at BETWEEN :start_date AND :end_date
+
+                  GROUP BY DATE(created_at)
+
+                  ORDER BY DATE(created_at) ASC";
+
+
+
+        $params = [
+
+            'start_date' => $startDate->format('Y-m-d H:i:s'),
+
+            'end_date' => $endDate->format('Y-m-d H:i:s')
+
+        ];
+
+
+
+        return $this->db->query($query, $params)->fetchAll();
+
+    }
+
+
+    public function countPublished(): int {
+
+        $query = "SELECT COUNT(*) FROM courses WHERE is_published = 1";
+
+        return (int) $this->db->query($query)->fetchColumn();
+
+    }
+  
+
+
+    public function countPending(): int {
+
+        $query = "SELECT COUNT(*) FROM courses WHERE is_published = 0";
+
+        return (int) $this->db->query($query)->fetchColumn();
+
+    }
+    
+    
+        public function countNewCoursesSince(DateTime $date): int {
+    
+            $query = "SELECT COUNT(*) as total FROM courses WHERE created_at >= :date";
+    
+            $result = $this->db->query($query, ['date' => $date->format('Y-m-d H:i:s')])->fetch();
+    
+            return (int) $result['total'];
+    
+        }
+    
+    }
+    
+
+
+        
+        
+    
  
-}

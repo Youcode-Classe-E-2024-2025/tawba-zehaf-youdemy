@@ -130,4 +130,119 @@ class EnrollmentRepository
         
         return $user;
     }
-}
+
+
+    public function deleteByCourseId(int $courseId): void {
+
+        $query = "DELETE FROM enrollments WHERE course_id = :course_id";
+
+        $this->db->query($query, ['course_id' => $courseId]);
+
+    }
+  
+
+
+    public function getTotalCount(): int {
+
+        $query = "SELECT COUNT(*) as total FROM enrollments";
+
+        $result = $this->db->query($query)->fetch();
+
+        return (int) $result['total'];
+
+    }
+
+    public function getNewEnrollmentsByDateRange(DateTime $startDate, DateTime $endDate): array {
+
+        $query = "SELECT * FROM enrollments WHERE created_at BETWEEN :start_date AND :end_date";
+
+        $params = [
+
+            'start_date' => $startDate->format('Y-m-d H:i:s'),
+
+            'end_date' => $endDate->format('Y-m-d H:i:s')
+
+        ];
+
+        return $this->db->query($query, $params)->fetchAll();
+
+    }
+ 
+
+    public function calculateTotalRevenue(): float {
+
+        $query = "SELECT SUM(amount) as total_revenue FROM enrollments";
+
+        $result = $this->db->query($query)->fetch();
+
+        return (float) $result['total_revenue'];
+
+    }
+
+
+    public function calculateRevenueSince(DateTime $startDate, ?DateTime $endDate = null): float {
+
+        $query = "SELECT SUM(amount) as total_revenue FROM enrollments WHERE created_at >= :start_date";
+
+        $params = ['start_date' => $startDate->format('Y-m-d H:i:s')];
+
+
+
+        if ($endDate) {
+
+            $query .= " AND created_at <= :end_date";
+
+            $params['end_date'] = $endDate->format('Y-m-d H:i:s');
+
+        }
+
+
+
+        $result = $this->db->query($query, $params)->fetch();
+
+        return $result['total_revenue'] ?? 0.0;
+
+    }
+    
+        public function getAverageCompletionRate(): float {
+    
+            $query = "SELECT AVG(completion_rate) as average_completion_rate FROM enrollments";
+    
+            $result = $this->db->query($query)->fetch();
+    
+            return (float) $result['average_completion_rate'];
+    
+        }
+    
+            public function getAverageWatchTime(): float {
+        
+                try {
+        
+                    $query = "SELECT AVG(watch_time) as average_watch_time FROM enrollments";
+        
+                    $result = $this->db->query($query)->fetch();
+        
+                    return (float) $result['average_watch_time'];
+        
+                } catch (PDOException $e) {
+        
+                    throw new \RuntimeException('Failed to get average watch time: ' . $e->getMessage());
+        
+                }
+        
+            }
+           
+                public function countActive(): int {
+            
+                    $query = "SELECT COUNT(*) FROM enrollments WHERE status = 'active'";
+            
+                    return (int) $this->db->query($query)->fetchColumn();
+            
+                }
+            
+            }
+            
+        
+        
+    
+    

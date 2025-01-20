@@ -120,4 +120,85 @@ class ReviewRepository {
         
         return $review;
     }
-}
+
+
+    public function deleteByCourseId(int $courseId): void {
+
+        $query = "DELETE FROM reviews WHERE course_id = :course_id";
+
+        $this->db->query($query, ['course_id' => $courseId]);
+
+    }
+
+    
+    
+    
+    
+        public function getTotalCount(): int {
+    
+            $query = "SELECT COUNT(*) as total FROM reviews";
+    
+            $result = $this->db->query($query)->fetch();
+    
+            return (int) $result['total'];
+    
+        }
+
+        
+        
+            public function count(): int {
+        
+                $query = "SELECT COUNT(*) as total FROM reviews";
+        
+                $result = $this->db->query($query)->fetch();
+        
+                return (int) $result['total'];
+        
+            }
+         
+
+    public function getNewReviewsByDateRange(DateTime $startDate, DateTime $endDate): array {
+
+        $query = "SELECT * FROM reviews WHERE created_at BETWEEN :start_date AND :end_date";
+
+        $params = [
+
+            'start_date' => $startDate->format('Y-m-d H:i:s'),
+
+            'end_date' => $endDate->format('Y-m-d H:i:s')
+
+        ];
+
+        return $this->db->query($query, $params)->fetchAll();
+
+    }
+    public function countReviewsSince(DateTime $startDate): int {
+
+        $query = "SELECT COUNT(*) as review_count FROM reviews WHERE created_at >= :start_date";
+
+        $params = ['start_date' => $startDate->format('Y-m-d H:i:s')];
+
+        return (int) $this->db->query($query, $params)->fetch()['review_count'];
+
+    }
+   
+    
+
+    
+        public function getOverallAverageRating(): float {
+    
+            $query = "SELECT AVG(rating) as average_rating FROM reviews";
+    
+            $result = $this->db->query($query)->fetch();
+    
+            return (float) $result['average_rating'];
+    
+        }
+    
+    }
+    
+
+        
+    
+
+    
