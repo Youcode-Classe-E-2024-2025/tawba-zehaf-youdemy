@@ -20,7 +20,7 @@
             <div class="text-red-500 text-center mb-4"><?php echo $data['error']; ?></div>
             <?php endif; ?>
 
-            <form action="/users/register" method="POST" onsubmit="return validateRegistrationForm()">
+            <form action="/register" method="POST" onsubmit="return validateRegistrationForm()">
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                 <!-- Username Field -->
