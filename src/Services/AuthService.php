@@ -48,12 +48,7 @@ class AuthService {
             throw new \RuntimeException('Registration failed: ' . $e->getMessage());
         }
     }
-
-    public function logout(): void {
-        session_start();
-        session_destroy();
-    }
-
+  
     public function getCurrentUser(): ?User {
         if (!isset($_SESSION['user_id'])) {
             return null;
@@ -135,4 +130,9 @@ class AuthService {
             exit;
         }
     } }
+    public function logout(): void {
+        session_start();
+        session_destroy();
+    }
+
 }
