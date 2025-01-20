@@ -107,5 +107,32 @@ class AuthService {
             $data['error'] = 'Invalid email or password.';
         }
 }
-    }
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Validate CSRF token
+        if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+            die('Invalid CSRF token');
+        }
+    
+        // Sanitize and validate input
+        $username = htmlspecialchars(trim($_POST['username']));
+        $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+        $password = $_POST['password'];
+        $confirm_password = $_POST['confirm_password'];
+    
+        // Check if passwords match
+        if ($password !== $confirm_password) {
+            $data['error'] = 'Passwords do not match.';
+        } else {
+            // Hash the password
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    
+            // Proceed with saving the user data
+            $user = new User($username, $email, $_POST['role']);
+            $user->setPassword($hashedPassword);
+            $this->userRepository->save($user);
+            header('Location: /login'); // Redirect to login page after successful registration
+            exit;
+        }
+    } }
 }
