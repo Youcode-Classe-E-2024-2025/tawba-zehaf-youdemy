@@ -154,7 +154,8 @@ class CourseService
         $stmt = $this->db->getConnection()->prepare('SELECT * FROM courses WHERE id = :id');
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        // return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->courseRepository->findById($id);
     }
     
     public function enrollInCourse($courseId, $userId) {
