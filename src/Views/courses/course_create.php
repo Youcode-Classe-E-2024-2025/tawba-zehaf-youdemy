@@ -24,7 +24,18 @@
 
         <label for="category">Category:</label>
         <input type="text" name="category"><br>
-
+    <input type="text" name="title" placeholder="Course Title" required>
+    <input type="text" name="description" placeholder="Course Description" required>
+    <textarea name="content" placeholder="Course Content" required></textarea>
+    <input type="number" name="category_id" placeholder="Category ID" required>
+    <input type="number" name="teacher_id" placeholder="Teacher ID" required>
+    <select name="is_published">
+        <option value="1">Published</option>
+        <option value="0">Not Published</option>
+    </select>
+    <input type="text" name="tags" placeholder="Tags (comma-separated)">
+    <button type="submit">Create Course</button>
+</form>
         <button type="submit">Create Course</button>
     </form>
 </body>

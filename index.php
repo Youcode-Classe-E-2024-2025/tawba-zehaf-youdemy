@@ -51,7 +51,9 @@ $adminService = new AdminService($userRepository, $courseRepository, $enrollment
 $router->get('/', function() {
     require 'main.php'; 
 });
-
+$router->get('/register', function() {
+    (new AuthController())->register();
+});
 $router->get('/login', function() {
     require 'src/Views/auth/login.php';
 });

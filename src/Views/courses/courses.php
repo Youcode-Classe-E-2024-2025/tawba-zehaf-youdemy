@@ -3,8 +3,8 @@ use Youdemy\Config\Database;
 require_once 'Config/Database.php'; // Adjust path as necessary
 
 // Database connection
-$database = new Database();
-$db = $database->getConnection(); // Assuming you have a method to get the connection
+$database = Database::getInstance(); // Use the singleton method
+$db = $database->getConnection(); // Get the connection
 
 // Pagination settings
 $limit = 10; // Number of courses per page
@@ -51,8 +51,12 @@ $totalPages = ceil($totalCourses / $limit);
                 <tbody>
                     <?php foreach ($courses as $course): ?>
                     <tr>
-                        <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['name']) ?></td>
-                        <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['description']) ?></td>
+                        <td class="py-2 px-4 border-b">
+                            <?= isset($course['title']) ? htmlspecialchars($course['title']) : 'N/A' ?></td>
+                        <td class="py-2 px-4 border-b">
+                            <?= isset($course['description']) ? htmlspecialchars($course['description']) : 'N/A' ?></td>
+                        <td class="py-2 px-4 border-b">
+                            <?= isset($course['tags']) ? htmlspecialchars($course['tags']) : 'No Tags' ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
