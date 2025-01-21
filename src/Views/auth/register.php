@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db = Youdemy\Config\Database::getInstance()->getConnection();
         $stmt = $db->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
         $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password', $password);
         $stmt->execute();
 

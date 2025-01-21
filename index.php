@@ -130,7 +130,21 @@ $router->get('/admin/users', function() {
 $router->get('/admin/courses', function() {
     require 'src/Views/admin/courses.php'; 
 });
+$router->get('/courses', function() {
+    require 'src/Views/courses/courses.php'; 
+});
 
+$router->get('/courses/{id}', function($id) {
+    require 'src/Views/courses/course_details.php'; 
+});
+
+$router->post('/courses/enroll/{id}', function($id) {
+    // Logic to enroll the student in the course
+});
+
+$router->get('/my-courses', function() {
+    require 'src/Views/courses/my_courses.php'; 
+});
 // Set 404 handler
 $router->setNotFoundHandler(function() {
     http_response_code(404);

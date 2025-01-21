@@ -6,11 +6,12 @@ use PDO;
 use PDOException;
 
 class Course {
-    private ?int $id = null;
-    private string $title;
-    private string $description;
-    private string $content;
+    public ?int $id = null;
+    public string $title;
+    public string $description;
+    public string $content;
     private int $teacherId;
+    public string $teacher_name;
     private int $categoryId;
     private float $price;
     private ?DateTime $createdAt = null;

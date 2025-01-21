@@ -49,15 +49,35 @@ class AuthService {
     //     }
     // }
     public function register(string $username, string $email, string $password): void {
+        // Validate password length
         if (strlen($password) < 8) {
             throw new \InvalidArgumentException("Password must be at least 8 characters long");
         }
-
-        // Create a new user
-        $user = new User($username, $email, $password, 'user'); // Default role
+    
+        // Hash the password
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+    
+        // Create a new User instance
+        $user = new User($username, $email, $hashedPassword, 'user'); // Default role
+    
         // Save user to the database
-        $this->userRepository->save($user); // Assuming you have a save method in UserRepository
-    }
+        try {
+            $this->userRepository->save($user); // Ensure save method is implemented
+        } catch (\Exception $e) {
+            // Handle error (e.g., log it or display a message)
+            echo "Registration failed: " . $e->getMessage();
+        }}
+    // }
+    // public function register(string $username, string $email, string $password): void {
+    //     if (strlen($password) < 8) {
+    //         throw new \InvalidArgumentException("Password must be at least 8 characters long");
+    //     }
+
+    //     // Create a new user
+    //     $user = new User($username, $email, $password, 'user'); // Default role
+    //     // Save user to the database
+    //     $this->userRepository->save($user); // Assuming you have a save method in UserRepository
+    // }
     public function getCurrentUser(): ?User {
         if (!isset($_SESSION['user_id'])) {
             return null;
