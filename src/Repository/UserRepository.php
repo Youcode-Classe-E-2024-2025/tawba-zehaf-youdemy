@@ -79,13 +79,11 @@ class UserRepository {
             'name' => $user->getName(),
             'email' => $user->getEmail(),
             'password' => $user->getPassword(),
-            'role' => $user->getRole(),
-            'created_at' => $now->format('Y-m-d H:i:s'),
-            'updated_at' => $now->format('Y-m-d H:i:s')
+            'role' => $user->getRole()
         ];
 
-        $query = "INSERT INTO users (name, email, password, role, created_at, updated_at) 
-                 VALUES (:name, :email, :password, :role, :created_at, :updated_at)";
+        $query = "INSERT INTO users (name, email, password, role) 
+                 VALUES (:name, :email, :password, :role)";
         
         $this->db->query($query, $params);
         $user->setId($this->db->lastInsertId());
@@ -99,8 +97,7 @@ class UserRepository {
             'id' => $user->getId(),
             'name' => $user->getName(),
             'email' => $user->getEmail(),
-            'role' => $user->getRole(),
-            'updated_at' => $now->format('Y-m-d H:i:s')
+            'role' => $user->getRole()
         ];
 
         // Only include password in update if it's been changed
@@ -115,7 +112,7 @@ class UserRepository {
                  SET name = :name,
                      email = :email,
                      role = :role,
-                     updated_at = :updated_at" . 
+                     " . 
                      $passwordSet . 
                  " WHERE id = :id";
 

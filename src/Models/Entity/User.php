@@ -32,9 +32,9 @@ class User
         $this->email = $email;
         $this->password = password_hash($password, PASSWORD_DEFAULT);
         $this->role = $role;
-        $this->isActive = true;
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
+        // $this->isActive = true;
+        // $this->createdAt = new \DateTime();
+        // $this->updatedAt = new \DateTime();
     }
 
     /**

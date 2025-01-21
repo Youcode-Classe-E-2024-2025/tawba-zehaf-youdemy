@@ -11,14 +11,22 @@ if (empty($_SESSION['csrf_token'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Assuming you have a User class for handling user operations
     $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
-
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); 
+    $email = $_POST['email'];
+    $role = $_POST['role'];
+    $is_active =1;
+    $created_at = date('Y-m-d H:i:s');
+    $updated_at = date('Y-m-d H:i:s');
     try {
         $db = Youdemy\Config\Database::getInstance()->getConnection();
-        $stmt = $db->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
+        $stmt = $db->prepare("INSERT INTO users (username, email, password, role) VALUES (:username, :email, :password, :role)");
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':role', $role);
+        // $stmt->bindParam(':is_active', $is_active);
+        // $stmt->bindParam(':created_at',  $created_at);
+        // $stmt->bindParam(':updated_at',   $updated_at);
         $stmt->execute();
 
         // Redirect or show success message

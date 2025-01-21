@@ -11,6 +11,10 @@ if (!$db) {
     die("Database connection failed.");
 }
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 
 use Youdemy\Router;
 use Youdemy\Controllers\HomeController;
