@@ -2,6 +2,15 @@
 require_once "vendor/autoload.php";
 require_once "src/Router.php";
 require_once __DIR__ . '/config/config.php';
+require_once 'Config/Database.php';
+
+// Get the database connection
+$db = Youdemy\Config\Database::getInstance()->getConnection();
+
+if (!$db) {
+    die("Database connection failed.");
+}
+
 
 use Youdemy\Router;
 use Youdemy\Controllers\HomeController;
@@ -20,7 +29,14 @@ use Youdemy\Repository\EnrollmentRepository;
 use Youdemy\Repository\CourseRepository;
 use Youdemy\Repository\TagRepository;
 use Youdemy\Repository\ReviewRepository;
-
+$database = new Youdemy\Config\Database();
+$userRepository = new Youdemy\Repository\UserRepository($database);
+$courseRepository = new Youdemy\Repository\CourseRepository($database);
+$enrollmentRepository = new Youdemy\Repository\EnrollmentRepository($database);
+$reviewRepository = new Youdemy\Repository\ReviewRepository($database);
+$authService = new Youdemy\Services\AuthService($userRepository);
+$adminService = new Youdemy\Services\AdminService($userRepository, $courseRepository, $enrollmentRepository, $reviewRepository, $authService, $database);
+$adminService = new Youdemy\Services\AdminService($userRepository, $courseRepository, $enrollmentRepository, $reviewRepository, $authService, $database);
 $router = new Router();
 $database = new Database();
 $userRepository = new UserRepository($database);
@@ -46,7 +62,7 @@ $router->get('/register', function() {
 
 // Course routes
 $router->get('/courses', function() {
-    require 'src/Views/courses/index.php'; 
+    require 'src/Views/courses/courses.php'; 
 });
 
 $router->get('/courses/{id}', function($id) {

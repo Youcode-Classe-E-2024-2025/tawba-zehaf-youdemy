@@ -8,6 +8,24 @@ if (session_status() === PHP_SESSION_NONE) {
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Assuming you have a User class for handling user operations
+    $username = $_POST['username'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
+
+    try {
+        $db = Youdemy\Config\Database::getInstance()->getConnection();
+        $stmt = $db->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':password', $password);
+        $stmt->execute();
+
+        // Redirect or show success message
+    } catch (PDOException $e) {
+        echo "Registration failed: " . $e->getMessage();
+        exit; // Stop execution to prevent further errors
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
