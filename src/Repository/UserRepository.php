@@ -5,6 +5,7 @@ namespace Youdemy\Repository;
 use Youdemy\Config\Database;
 use Youdemy\Models\Entity\User;
 use PDOException;
+use PDO;
 use DateTime;
 
 class UserRepository {
@@ -26,15 +27,27 @@ class UserRepository {
         }
     }
 
-    public function findById(int $id): ?User {
-        $query = "SELECT * FROM users WHERE id = :id";
-        $result = $this->db->query($query, ['id' => $id])->fetch();
+    // public function findById(int $id): ?User {
+    //     $query = "SELECT * FROM users WHERE id = :id";
+    //     $result = $this->db->query($query, ['id' => $id])->fetch();
 
-        if (!$result) {
-            return null;
+    //     if (!$result) {
+    //         return null;
+    //     }
+
+    //     return $this->hydrateUser($result);
+    // }
+    public function findById($id): ?User {
+        $query = "SELECT username, email, password, role FROM users WHERE id = :id"; // Include password
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+    
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($data) {
+            return $this->hydrateUser($data);
         }
-
-        return $this->hydrateUser($result);
+        return null; // Return null if no user found
     }
 
     public function findByEmail(string $email): ?User {
@@ -115,28 +128,47 @@ class UserRepository {
         $user->setUpdatedAt($now);
     }
 
-    private function hydrateUser(array $data): User {
-        $user = new User($data['name'], $data['email'], $data['role']);
-        $user->setId($data['id']);
-        $user->setName($data['name']);
-        $user->setEmail($data['email']);
-        $user->setRole($data['role']);
+    // private function hydrateUser(array $data): User {
+    //     $user = new User($data['name'], $data['email'], $data['role']);
+    //     $user->setId($data['id']);
+    //     $user->setName($data['name']);
+    //     $user->setEmail($data['email']);
+    //     $user->setRole($data['role']);
         
-        if (isset($data['password'])) {
-            $user->setPassword($data['password']);
+    //     if (isset($data['password'])) {
+    //         $user->setPassword($data['password']);
+    //     }
+        
+    //     if (isset($data['created_at'])) {
+    //         $user->setCreatedAt(new DateTime($data['created_at']));
+    //     }
+        
+    //     if (isset($data['updated_at'])) {
+    //         $user->setUpdatedAt(new DateTime($data['updated_at']));
+    //     }
+        
+    //     return $user;}
+        
+    // public function hydrateUser(array $data): User {
+    //     $username = isset($data['username']) ? $data['username'] : ''; // Default to empty string if not set
+    //     $email = isset($data['email']) ? $data['email'] : '';
+    //     $role = isset($data['role']) ? $data['role'] : '';
+    
+    //     return new User($username, $email, $role);
+    // }
+    public function hydrateUser(array $data): User {
+        $username = isset($data['username']) ? $data['username'] : '';
+        $email = isset($data['email']) ? $data['email'] : '';
+        $password = isset($data['password']) ? $data['password'] : ''; // Ensure this is fetched correctly
+        $role = isset($data['role']) ? $data['role'] : '';
+    
+        // Check if the password is valid
+        if (strlen($password) < 8) {
+            throw new \InvalidArgumentException("Password must be at least 8 characters long");
         }
-        
-        if (isset($data['created_at'])) {
-            $user->setCreatedAt(new DateTime($data['created_at']));
-        }
-        
-        if (isset($data['updated_at'])) {
-            $user->setUpdatedAt(new DateTime($data['updated_at']));
-        }
-        
-        return $user;}
-        
-        
+    
+        return new User($username, $email, $password, $role);
+    }
             public function getTotalCount(): int {
         
                 $query = "SELECT COUNT(*) as total FROM users";

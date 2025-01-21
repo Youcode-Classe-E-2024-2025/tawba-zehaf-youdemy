@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="text-red-500 text-center mb-4"><?php echo htmlspecialchars($data['error']); ?></div>
             <?php endif; ?>
 
-            <form action="/users/register" method="POST" onsubmit="return validateRegistrationForm()">
+            <form action="/register" method="POST" onsubmit="return validateRegistrationForm()">
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                 <!-- Username Field -->
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         class="w-full bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 focus:outline-none">Register</button>
                 </div>
 
-                <p class="text-center text-purple-600">Already have an account? <a href="/users/login"
+                <p class="text-center text-purple-600">Already have an account? <a href="/login"
                         class="font-semibold hover:underline">Login here</a></p>
             </form>
         </div>

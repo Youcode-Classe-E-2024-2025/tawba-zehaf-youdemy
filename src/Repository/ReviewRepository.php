@@ -2,7 +2,7 @@
 
 namespace Youdemy\Repository;
 
-use Youdemy\Config\Database;
+use Youdemy\Config\Database; // Ensure this path is correct and the Database class exists
 use Youdemy\Models\Entity\Review;
 use PDOException;
 use DateTime;

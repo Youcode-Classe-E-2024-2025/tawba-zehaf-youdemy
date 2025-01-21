@@ -2,7 +2,7 @@
 namespace Youdemy\Models\Entity;
 class User
 {
-    private int $id;
+    private int $userid;
     private string $username;
     private string $email;
     private string $password;
@@ -47,7 +47,7 @@ class User
     }
     public function getId(): int
     {
-        return $this->id;
+        return $this->userid;
     }
 
     /**
@@ -222,7 +222,7 @@ class User
 
     public function setId(int $id): void {
 
-        $this->id = $id;
+        $this->userid = $id;
 
     }
     

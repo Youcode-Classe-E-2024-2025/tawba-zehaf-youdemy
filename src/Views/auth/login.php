@@ -54,7 +54,7 @@ if (empty($_SESSION['csrf_token'])) {
                         class="w-full bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 focus:outline-none">Login</button>
                 </div>
 
-                <p class="text-center text-purple-600">Don't have an account? <a href="/users/register"
+                <p class="text-center text-purple-600">Don't have an account? <a href="/register"
                         class="font-semibold hover:underline">Register here</a></p>
             </form>
         </div>

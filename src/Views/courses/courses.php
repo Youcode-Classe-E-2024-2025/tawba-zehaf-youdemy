@@ -25,6 +25,18 @@ $countStmt = $db->prepare($countQuery);
 $countStmt->execute();
 $totalCourses = $countStmt->fetchColumn();
 $totalPages = ceil($totalCourses / $limit);
+
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+$query = "
+    SELECT courses.*, GROUP_CONCAT(tags.name) AS tags
+    FROM courses
+    LEFT JOIN course_tags ON courses.id = course_tags.course_id
+    LEFT JOIN tags ON course_tags.tag_id = tags.id
+    WHERE courses.title LIKE :search OR courses.description LIKE :search
+    GROUP BY courses.id
+    LIMIT :limit OFFSET :offset";
+
+$searchParam = "%$search%"; // Prepare the search parameter for LIKE
 ?>
 
 <!DOCTYPE html>
@@ -65,9 +77,11 @@ $totalPages = ceil($totalCourses / $limit);
 
         <div class="mt-4">
             <nav class="flex justify-between">
-                <a href="?page=<?= max(1, $page - 1) ?>" class="text-blue-500">Previous</a>
+                <a href="?page=<?= max(1, $page - 1) ?>&search=<?= urlencode($search) ?>"
+                    class="text-blue-500">Previous</a>
                 <span>Page <?= $page ?> of <?= $totalPages ?></span>
-                <a href="?page=<?= min($totalPages, $page + 1) ?>" class="text-blue-500">Next</a>
+                <a href="?page=<?= min($totalPages, $page + 1) ?>&search=<?= urlencode($search) ?>"
+                    class="text-blue-500">Next</a>
             </nav>
         </div>
     </div>

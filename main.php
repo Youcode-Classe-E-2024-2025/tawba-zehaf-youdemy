@@ -23,9 +23,19 @@ use Youdemy\Router;
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <a href="/" class="text-2xl font-bold text-purple-600">YouDemy</a>
-                    <div class="hidden md:flex ml-10">
+                    <!-- <div class="hidden md:flex ml-10">
                         <input type="text" placeholder="Rechercher un cours..." aria-label="Rechercher un cours"
                             class="w-96 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div> -->
+                    <div class="hidden md:flex ml-10">
+                        <form method="GET" action="/courses">
+                            <!-- Adjust action to your courses route -->
+                            <input type="text" name="search" placeholder="Rechercher un cours..."
+                                aria-label="Rechercher un cours"
+                                class="w-96 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <button type="submit"
+                                class="ml-2 bg-purple-500 text-white px-4 py-2 rounded-lg">Search</button>
+                        </form>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -79,31 +89,33 @@ use Youdemy\Router;
     </header>
 
     <main>
-
         <section class="max-w-7xl mx-auto px-4 py-12">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl font-bold">Cours populaires</h2>
                 <div class="hidden md:flex space-x-4">
-                    <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option>Les plus populaires</option>
-                        <option>Les mieux notés</option>
-                        <option>Les plus récents</option>
-                        <option>Prix : croissant</option>
-                        <option>Prix : décroissant</option>
+                    <select id="sortBy"
+                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="popularity">Les plus populaires</option>
+                        <option value="rating">Les mieux notés</option>
+                        <option value="newest">Les plus récents</option>
+                        <option value="price-asc">Prix : croissant</option>
+                        <option value="price-desc">Prix : décroissant</option>
                     </select>
-                    <select class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option>Tous niveaux</option>
-                        <option>Débutant</option>
-                        <option>Intermédiaire</option>
-                        <option>Avancé</option>
+                    <select id="level"
+                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="all">Tous niveaux</option>
+                        <option value="beginner">Débutant</option>
+                        <option value="intermediate">Intermédiaire</option>
+                        <option value="advanced">Avancé</option>
                     </select>
                 </div>
             </div>
             <!-- Course Grid -->
             <div class="md:col-span-3">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="courseGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Course Card 1 -->
-                    <article class="bg-white rounded-lg shadow-md overflow-hidden group">
+                    <article class="course-card bg-white rounded-lg shadow-md overflow-hidden group"
+                        data-level="beginner" data-price="29.99" data-rating="4.8">
                         <div class="relative">
                             <img src="https://via.placeholder.com/400x225"
                                 alt="Thumbnail du cours de développement web Full-Stack" class="w-full object-cover">
@@ -115,20 +127,8 @@ use Youdemy\Router;
                             </div>
                         </div>
                         <div class="p-4">
-                            <div class="flex items-center mb-2">
-                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Bestseller</span>
-                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded ml-2">Nouveau</span>
-                            </div>
                             <h3 class="font-semibold mb-2">Introduction au développement web Full-Stack</h3>
-                            <p class="text-gray-600 text-sm mb-2">Apprenez HTML, CSS, JavaScript, Node.js et MongoDB
-                            </p>
-                            <div class="flex items-center text-sm text-gray-500 mb-2">
-                                <i class="far fa-clock mr-1"></i>
-                                <span>32 heures au total</span>
-                                <i class="far fa-play-circle ml-4 mr-1"></i>
-                                <span>128 leçons</span>
-                            </div>
-                            <p class="text-gray-600 text-sm mb-2">Par John Doe</p>
+                            <p class="text-gray-600 text-sm mb-2">Apprenez HTML, CSS, JavaScript, Node.js et MongoDB</p>
                             <div class="flex items-center mb-2">
                                 <span class="text-yellow-500 font-bold">4.8</span>
                                 <div class="flex text-yellow-500 ml-1">
@@ -138,46 +138,18 @@ use Youdemy\Router;
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star"></i>
                                 </div>
-                                <span class="text-gray-600 text-sm ml-1">(2,345 avis)</span>
                             </div>
                             <div class="flex items-center">
                                 <div class="flex-1">
                                     <span class="font-bold text-xl">29,99 €</span>
-                                    <span class="line-through text-gray-500 ml-2">99,99 €</span>
-                                </div>
-                                <div class="bg-red-100 text-red-800 text-sm px-2 py-1 rounded">
-                                    2 jours restants
                                 </div>
                             </div>
-                            <div class="mt-4 space-y-2">
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Certificat de fin de formation</span>
-                                </div>
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Accès à vie</span>
-                                </div>
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Projets pratiques inclus</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-4 border-t">
-                            <button
-                                class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                                Ajouter au panier
-                            </button>
-                            <button
-                                class="w-full mt-2 border border-purple-600 text-purple-600 py-2 rounded-lg hover:bg-purple-50 transition-colors">
-                                Ajouter à la liste de souhaits
-                            </button>
                         </div>
                     </article>
 
                     <!-- Course Card 2 -->
-                    <article class="bg-white rounded-lg shadow-md overflow-hidden group">
+                    <article class="course-card bg-white rounded-lg shadow-md overflow-hidden group"
+                        data-level="intermediate" data-price="49.99" data-rating="4.9">
                         <div class="relative">
                             <img src="https://via.placeholder.com/400x225"
                                 alt="Thumbnail du cours d'Intelligence Artificielle" class="w-full object-cover">
@@ -189,19 +161,9 @@ use Youdemy\Router;
                             </div>
                         </div>
                         <div class="p-4">
-                            <div class="flex items-center mb-2">
-                                <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Populaire</span>
-                            </div>
                             <h3 class="font-semibold mb-2">Intelligence Artificielle : De Zéro à Expert</h3>
-                            <p class="text-gray-600 text-sm mb-2">Python, TensorFlow, Deep Learning et Machine
-                                Learning</p>
-                            <div class="flex items-center text-sm text-gray-500 mb-2">
-                                <i class="far fa-clock mr-1"></i>
-                                <span>45 heures au total</span>
-                                <i class="far fa-play-circle ml-4 mr-1"></i>
-                                <span>164 leçons</span>
-                            </div>
-                            <p class="text-gray-600 text-sm mb-2">Par Sarah Connor</p>
+                            <p class="text-gray-600 text-sm mb-2">Python, TensorFlow, Deep Learning et Machine Learning
+                            </p>
                             <div class="flex items-center mb-2">
                                 <span class="text-yellow-500 font-bold">4.9</span>
                                 <div class="flex text-yellow-500 ml-1">
@@ -211,46 +173,18 @@ use Youdemy\Router;
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star"></i>
                                 </div>
-                                <span class="text-gray-600 text-sm ml-1">(3,789 avis)</span>
                             </div>
                             <div class="flex items-center">
                                 <div class="flex-1">
                                     <span class="font-bold text-xl">49,99 €</span>
-                                    <span class="line-through text-gray-500 ml-2">159,99 €</span>
-                                </div>
-                                <div class="bg-red-100 text-red-800 text-sm px-2 py-1 rounded">
-                                    5 jours restants
                                 </div>
                             </div>
-                            <div class="mt-4 space-y-2">
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>30 jours satisfait ou remboursé</span>
-                                </div>
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Support instructeur</span>
-                                </div>
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Datasets inclus</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-4 border-t">
-                            <button
-                                class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                                Ajouter au panier
-                            </button>
-                            <button
-                                class="w-full mt-2 border border-purple-600 text-purple-600 py-2 rounded-lg hover:bg-purple-50 transition-colors">
-                                Ajouter à la liste de souhaits
-                            </button>
                         </div>
                     </article>
 
                     <!-- Course Card 3 -->
-                    <article class="bg-white rounded-lg shadow-md overflow-hidden group">
+                    <article class="course-card bg-white rounded-lg shadow-md overflow-hidden group"
+                        data-level="beginner" data-price="39.99" data-rating="4.7">
                         <div class="relative">
                             <img src="https://via.placeholder.com/400x225" alt="Thumbnail du cours de Design UX/UI"
                                 class="w-full object-cover">
@@ -262,69 +196,29 @@ use Youdemy\Router;
                             </div>
                         </div>
                         <div class="p-4">
-                            <div class="flex items-center mb-2">
-                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Certifiant</span>
-                            </div>
                             <h3 class="font-semibold mb-2">Design UX/UI Masterclass 2025</h3>
-                            <p class="text-gray-600 text-sm mb-2">Figma, Adobe XD, Principes de design et Portfolio
-                            </p>
-                            <div class="flex items-center text-sm text-gray-500 mb-2">
-                                <i class="far fa-clock mr-1"></i>
-                                <span>38 heures au total</span>
-                                <i class="far fa-play-circle ml-4 mr-1"></i>
-                                <span>145 leçons</span>
-                            </div>
-                            <p class="text-gray-600 text-sm mb-2">Par Marie Martin</p>
+                            <p class="text-gray-600 text-sm mb-2">Figma, Adobe XD, Principes de design et Portfolio</p>
                             <div class="flex items-center mb-2">
-                                <span class="text-yellow-500 center mb-2">
-                                    <span class="text-yellow-500 font-bold">4.7</span>
-                                    <div class="flex text-yellow-500 ml-1">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star-half-alt"></i>
-                                    </div>
-                                    <span class="text-gray-600 text-sm ml-1">(1,432 avis)</span>
+                                <span class="text-yellow-500 font-bold">4.7</span>
+                                <div class="flex text-yellow-500 ml-1">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
                             </div>
                             <div class="flex items-center">
                                 <div class="flex-1">
                                     <span class="font-bold text-xl">39,99 €</span>
-                                    <span class="line-through text-gray-500 ml-2">129,99 €</span>
-                                </div>
-                                <div class="bg-red-100 text-red-800 text-sm px-2 py-1 rounded">
-                                    3 jours restants
                                 </div>
                             </div>
-                            <div class="mt-4 space-y-2">
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Projet final évalué</span>
-                                </div>
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Templates gratuits inclus</span>
-                                </div>
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Accès aux mises à jour futures</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-4 border-t">
-                            <button
-                                class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                                Ajouter au panier
-                            </button>
-                            <button
-                                class="w-full mt-2 border border-purple-600 text-purple-600 py-2 rounded-lg hover:bg-purple-50 transition-colors">
-                                Ajouter à la liste de souhaits
-                            </button>
                         </div>
                     </article>
 
-                    <!-- Course Card 4 (New) -->
-                    <article class="bg-white rounded-lg shadow-md overflow-hidden group">
+                    <!-- Course Card 4 -->
+                    <article class="course-card bg-white rounded-lg shadow-md overflow-hidden group"
+                        data-level="advanced" data-price="59.99" data-rating="4.6">
                         <div class="relative">
                             <img src="https://via.placeholder.com/400x225" alt="Thumbnail du cours de Marketing Digital"
                                 class="w-full object-cover">
@@ -336,18 +230,8 @@ use Youdemy\Router;
                             </div>
                         </div>
                         <div class="p-4">
-                            <div class="flex items-center mb-2">
-                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Tendance</span>
-                            </div>
                             <h3 class="font-semibold mb-2">Marketing Digital : Stratégies Avancées</h3>
                             <p class="text-gray-600 text-sm mb-2">SEO, SEM, Médias Sociaux et Analyse de Données</p>
-                            <div class="flex items-center text-sm text-gray-500 mb-2">
-                                <i class="far fa-clock mr-1"></i>
-                                <span>50 heures au total</span>
-                                <i class="far fa-play-circle ml-4 mr-1"></i>
-                                <span>180 leçons</span>
-                            </div>
-                            <p class="text-gray-600 text-sm mb-2">Par Alex Dupont</p>
                             <div class="flex items-center mb-2">
                                 <span class="text-yellow-500 font-bold">4.6</span>
                                 <div class="flex text-yellow-500 ml-1">
@@ -357,45 +241,84 @@ use Youdemy\Router;
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star-half-alt"></i>
                                 </div>
-                                <span class="text-gray-600 text-sm ml-1">(2,156 avis)</span>
                             </div>
                             <div class="flex items-center">
                                 <div class="flex-1">
                                     <span class="font-bold text-xl">59,99 €</span>
-                                    <span class="line-through text-gray-500 ml-2">199,99 €</span>
-                                </div>
-                                <div class="bg-red-100 text-red-800 text-sm px-2 py-1 rounded">
-                                    7 jours restants
-                                </div>
-                            </div>
-                            <div class="mt-4 space-y-2">
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Certification reconnue</span>
-                                </div>
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Études de cas réelles</span>
-                                </div>
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span>Accès à une communauté d'experts</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="p-4 border-t">
-                            <button
-                                class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                                Ajouter au panier
-                            </button>
-                            <button
-                                class="w-full mt-2 border border-purple-600 text-purple-600 py-2 rounded-lg hover:bg-purple-50 transition-colors">
-                                Ajouter à la liste de souhaits
-                            </button>
+                    </article>
+
+                    <!-- Course Card 5 -->
+                    <article class="course-card bg-white rounded-lg shadow-md overflow-hidden group"
+                        data-level="beginner" data-price="19.99" data-rating="4.5">
+                        <div class="relative">
+                            <img src="https://via.placeholder.com/400x225"
+                                alt="Thumbnail du cours de Développement Mobile" class="w-full object-cover">
+                            <div
+                                class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                                    Aperçu du cours
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold mb-2">Développement Mobile avec Flutter</h3>
+                            <p class="text-gray-600 text-sm mb-2">Créez des applications Android et iOS avec Flutter</p>
+                            <div class="flex items-center mb-2">
+                                <span class="text-yellow-500 font-bold">4.5</span>
+                                <div class="flex text-yellow-500 ml-1">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="flex-1">
+                                    <span class="font-bold text-xl">19,99 €</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Course Card 6 -->
+                    <article class="course-card bg-white rounded-lg shadow-md overflow-hidden group"
+                        data-level="intermediate" data-price="45.99" data-rating="4.8">
+                        <div class="relative">
+                            <img src="https://via.placeholder.com/400x225" alt="Thumbnail du cours de Python Avancé"
+                                class="w-full object-cover">
+                            <div
+                                class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                                    Aperçu du cours
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold mb-2">Python Avancé : Développement et Data Science</h3>
+                            <p class="text-gray-600 text-sm mb-2">Bibliothèques Python, Pandas, NumPy et Machine
+                                Learning</p>
+                            <div class="flex items-center mb-2">
+                                <span class="text-yellow-500 font-bold">4.8</span>
+                                <div class="flex text-yellow-500 ml-1">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="flex-1">
+                                    <span class="font-bold text-xl">45,99 €</span>
+                                </div>
+                            </div>
                         </div>
                     </article>
                 </div>
-            </div>
             </div>
         </section>
     </main>
@@ -459,6 +382,187 @@ use Youdemy\Router;
         } else {
             nav.classList.remove('shadow-md');
         }
+    });
+    // Get the filter options and course grid
+    const sortBySelect = document.getElementById('sortBy');
+    const levelSelect = document.getElementById('level');
+    const courseGrid = document.getElementById('courseGrid');
+
+    // Function to filter and sort courses
+    function filterCourses() {
+        const sortBy = sortBySelect.value;
+        const level = levelSelect.value;
+
+        // Get all course cards
+        const courses = Array.from(courseGrid.getElementsByClassName('course-card'));
+
+        // Filter courses by level
+        const filteredCourses = courses.filter(course => {
+            if (level === 'all') return true;
+            return course.dataset.level === level;
+        });
+
+        // Sort courses based on the selected sorting option
+        filteredCourses.sort((a, b) => {
+            if (sortBy === 'popularity') {
+                return b.dataset.rating - a.dataset.rating; // Sort by rating (desc)
+            } else if (sortBy === 'rating') {
+                return b.dataset.rating - a.dataset.rating; // Sort by rating (desc)
+            } else if (sortBy === 'newest') {
+                return 0; // Assuming courses are already listed by newest first
+            } else if (sortBy === 'price-asc') {
+                return parseFloat(a.dataset.price) - parseFloat(b.dataset.price); // Sort by price (asc)
+            } else if (sortBy === 'price-desc') {
+                return parseFloat(b.dataset.price) - parseFloat(a.dataset.price); // Sort by price (desc)
+            }
+        });
+
+        // Update the grid with filtered and sorted courses
+        courseGrid.innerHTML = '';
+        filteredCourses.forEach(course => courseGrid.appendChild(course));
+    }
+
+    // Add event listeners for the dropdowns
+    sortBySelect.addEventListener('change', filterCourses);
+    levelSelect.addEventListener('change', filterCourses);
+
+    // Initial filter on page load
+    filterCourses();
+    document.addEventListener('DOMContentLoaded', () => {
+        const courseData = [{
+                title: 'Introduction au développement web Full-Stack',
+                description: 'Apprenez HTML, CSS, JavaScript, Node.js et MongoDB',
+                level: 'beginner',
+                price: '29.99',
+                rating: '4.8',
+                image: 'https://via.placeholder.com/400x225'
+            },
+            {
+                title: 'Intelligence Artificielle : De Zéro à Expert',
+                description: 'Python, TensorFlow, Deep Learning et Machine Learning',
+                level: 'intermediate',
+                price: '49.99',
+                rating: '4.9',
+                image: 'https://via.placeholder.com/400x225'
+            },
+            {
+                title: 'Design UX/UI Masterclass 2025',
+                description: 'Figma, Adobe XD, Principes de design et Portfolio',
+                level: 'beginner',
+                price: '39.99',
+                rating: '4.7',
+                image: 'https://via.placeholder.com/400x225'
+            },
+            {
+                title: 'Marketing Digital : Stratégies Avancées',
+                description: 'SEO, SEM, Médias Sociaux et Analyse de Données',
+                level: 'advanced',
+                price: '59.99',
+                rating: '4.6',
+                image: 'https://via.placeholder.com/400x225'
+            },
+            {
+                title: 'Développement Mobile avec Flutter',
+                description: 'Créez des applications Android et iOS avec Flutter',
+                level: 'beginner',
+                price: '19.99',
+                rating: '4.5',
+                image: 'https://via.placeholder.com/400x225'
+            },
+            {
+                title: 'Python Avancé : Développement et Data Science',
+                description: 'Bibliothèques Python, Pandas, NumPy et Machine Learning',
+                level: 'intermediate',
+                price: '45.99',
+                rating: '4.8',
+                image: 'https://via.placeholder.com/400x225'
+            }
+        ];
+
+        const courseGrid = document.getElementById('courseGrid');
+
+        courseData.forEach(course => {
+            const courseCard = document.createElement('article');
+            courseCard.classList.add('course-card', 'bg-white', 'rounded-lg', 'shadow-md',
+                'overflow-hidden', 'group');
+            courseCard.setAttribute('data-level', course.level);
+            courseCard.setAttribute('data-price', course.price);
+            courseCard.setAttribute('data-rating', course.rating);
+
+            // Thumbnail
+            const thumbnailWrapper = document.createElement('div');
+            thumbnailWrapper.classList.add('relative');
+            const thumbnailImage = document.createElement('img');
+            thumbnailImage.src = course.image;
+            thumbnailImage.alt = `Thumbnail du cours de ${course.title}`;
+            thumbnailImage.classList.add('w-full', 'object-cover');
+            thumbnailWrapper.appendChild(thumbnailImage);
+
+            // Preview Button (Aperçu du cours)
+            const previewButtonWrapper = document.createElement('div');
+            previewButtonWrapper.classList.add('absolute', 'inset-0', 'bg-black', 'bg-opacity-50',
+                'opacity-0', 'group-hover:opacity-100', 'transition-opacity', 'flex',
+                'items-center', 'justify-center');
+            const previewButton = document.createElement('button');
+            previewButton.classList.add('bg-purple-600', 'text-white', 'px-4', 'py-2', 'rounded-lg',
+                'hover:bg-purple-700');
+            previewButton.textContent = 'Aperçu du cours';
+            previewButtonWrapper.appendChild(previewButton);
+
+            thumbnailWrapper.appendChild(previewButtonWrapper);
+
+            // Course Content
+            const courseContent = document.createElement('div');
+            courseContent.classList.add('p-4');
+
+            const courseTitle = document.createElement('h3');
+            courseTitle.classList.add('font-semibold', 'mb-2');
+            courseTitle.textContent = course.title;
+
+            const courseDescription = document.createElement('p');
+            courseDescription.classList.add('text-gray-600', 'text-sm', 'mb-2');
+            courseDescription.textContent = course.description;
+
+            const courseRating = document.createElement('div');
+            courseRating.classList.add('flex', 'items-center', 'mb-2');
+            const ratingSpan = document.createElement('span');
+            ratingSpan.classList.add('text-yellow-500', 'font-bold');
+            ratingSpan.textContent = course.rating;
+            const starsWrapper = document.createElement('div');
+            starsWrapper.classList.add('flex', 'text-yellow-500', 'ml-1');
+            for (let i = 0; i < 5; i++) {
+                const star = document.createElement('i');
+                star.classList.add('fas', 'fa-star');
+                if (i >= Math.floor(course.rating)) {
+                    star.classList.add('fa-star-half-alt'); // For partial stars
+                }
+                starsWrapper.appendChild(star);
+            }
+            courseRating.appendChild(ratingSpan);
+            courseRating.appendChild(starsWrapper);
+
+            const coursePriceWrapper = document.createElement('div');
+            coursePriceWrapper.classList.add('flex', 'items-center');
+            const priceWrapper = document.createElement('div');
+            priceWrapper.classList.add('flex-1');
+            const price = document.createElement('span');
+            price.classList.add('font-bold', 'text-xl');
+            price.textContent = `${course.price} €`;
+            priceWrapper.appendChild(price);
+
+            coursePriceWrapper.appendChild(priceWrapper);
+
+            // Append all elements to the course card
+            courseContent.appendChild(courseTitle);
+            courseContent.appendChild(courseDescription);
+            courseContent.appendChild(courseRating);
+            courseContent.appendChild(coursePriceWrapper);
+
+            courseCard.appendChild(thumbnailWrapper);
+            courseCard.appendChild(courseContent);
+
+            courseGrid.appendChild(courseCard);
+        });
     });
     </script>
 </body>

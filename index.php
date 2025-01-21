@@ -68,7 +68,7 @@ $router->get('/courses', function() {
 });
 
 $router->get('/courses/{id}', function($id) {
-    require 'src/Views/courses/show.php'; 
+    require 'src/Views/courses/coursescatalog.php'; 
 });
 
 // Auth routes
