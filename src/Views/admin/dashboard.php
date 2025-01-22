@@ -56,35 +56,3 @@ $courses = $adminService->getAllCourses();
                 <?php endforeach; ?>
             </tbody>
         </table>
-
-        <h2 class="text-xl font-semibold mb-2">Manage Courses</h2>
-        <table class="min-w-full">
-            <thead>
-                <tr>
-                    <th class="py-2 px-4 border-b">Course ID</th>
-                    <th class="py-2 px-4 border-b">Title</th>
-                    <th class="py-2 px-4 border-b">Description</th>
-                    <th class="py-2 px-4 border-b">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($courses as $course): ?>
-                <tr>
-                    <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['id']) ?></td>
-                    <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['title']) ?></td>
-                    <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['description']) ?></td>
-                    <td class="px-6 py-4">
-                        <a href="/admin/course/edit/<?php echo $course['id']; ?>"
-                            class="text-blue-600 hover:text-blue-800 mr-4">Edit</a>
-                        <a href="/admin/course/delete/<?php echo $course['id']; ?>"
-                            class="text-red-600 hover:text-red-800" onclick="return confirm('Are you sure?')">Delete</a>
-                    </td>
-
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-</body>
-
-</html>

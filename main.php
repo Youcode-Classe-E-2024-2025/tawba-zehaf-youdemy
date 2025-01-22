@@ -28,14 +28,18 @@ use Youdemy\Router;
                             class="w-96 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div> -->
                     <div class="hidden md:flex ml-10">
-                        <form method="GET" action="/courses">
-                            <!-- Adjust action to your courses route -->
-                            <input type="text" name="search" placeholder="Rechercher un cours..."
-                                aria-label="Rechercher un cours"
-                                class="w-96 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <button type="submit"
-                                class="ml-2 bg-purple-500 text-white px-4 py-2 rounded-lg">Search</button>
+                        <form action="/" method="GET" class="mb-8">
+                            <div class="flex gap-4">
+                                <input type="text" name="search" placeholder="Search courses..."
+                                    value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>"
+                                    class="flex-1 p-2 border rounded">
+                                <button type="submit"
+                                    class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+                                    Search
+                                </button>
+                            </div>
                         </form>
+
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -321,6 +325,44 @@ use Youdemy\Router;
                 </div>
             </div>
         </section>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <?php foreach ($courses as $course): ?>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <?php if (!empty($course['course_image'])): ?>
+                <img src="/uploads/images/<?php echo htmlspecialchars($course['course_image']); ?>"
+                    alt="<?php echo htmlspecialchars($course['title']); ?>" class="w-full h-48 object-cover">
+                <?php endif; ?>
+
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2"><?php echo htmlspecialchars($course['title']); ?></h3>
+                    <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($course['description']); ?></p>
+
+                    <?php if (!empty($course['video_content'])): ?>
+                    <div class="mb-4">
+                        <video controls class="w-full">
+                            <source src="/uploads/videos/<?php echo htmlspecialchars($course['video_content']); ?>"
+                                type="video/mp4">
+                        </video>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($course['pdf_content'])): ?>
+                    <a href="/uploads/pdfs/<?php echo htmlspecialchars($course['pdf_content']); ?>"
+                        class="text-blue-600 hover:underline" target="_blank">
+                        View Course Materials (PDF)
+                    </a>
+                    <?php endif; ?>
+
+                    <div class="mt-4">
+                        <span class="text-sm text-gray-500">By
+                            <?php echo htmlspecialchars($course['teacher_name']); ?></span>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+
+
     </main>
 
     <!-- Footer -->

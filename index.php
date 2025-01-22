@@ -136,47 +136,119 @@ $router->get('/admin/dashboard', function() use ($adminService, $authService) {
     
     (new AdminController($adminService, $authService))->dashboard();
 });
-// Admin User Management Routes
-$router->get('/admin/user/delete/{id}', function($id) use ($adminService, $authService) {
+// Admin routes with proper patterns
+$router->get('/admin/edit_user/:id', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->editUser($id);
+});
+
+$router->get('/admin/delete/:id', function($id) use ($adminService, $authService) {
     (new AdminController($adminService, $authService))->deleteUser($id);
 });
 
-$router->get('/admin/user/edit/{id}', function($id) use ($adminService, $authService) {
-    (new AdminController($adminService, $authService))->editUser($id);
+$router->get('/admin/edit/:id', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->editCourse($id);
 });
 
-$router->post('/admin/user/edit/{id}', function($id) use ($adminService, $authService) {
-    (new AdminController($adminService, $authService))->editUser($id);
-});
-
-// Admin Course Management Routes
-$router->get('/admin/course/delete/{id}', function($id) use ($adminService, $authService) {
+$router->get('/admin/courses/delete/:id', function($id) use ($adminService, $authService) {
     (new AdminController($adminService, $authService))->deleteCourse($id);
 });
+// $router->get('/', function() use ($courseService) {
+//     $db = Database::getInstance()->getConnection();
+//     $sql = "SELECT 
+//             c.*, 
+//             u.username as teacher_name,
+//             cm.image_path as course_image,
+//             cm.video_path as video_content,
+//             cm.pdf_path as pdf_content
+//             FROM courses c 
+//             JOIN users u ON c.teacher_id = u.id 
+//             LEFT JOIN course_media cm ON c.id = cm.course_id
+//             ORDER BY c.created_at DESC";
+//     $courses = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    
+//     require 'main.php';
+// });
 
-$router->get('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
-    (new AdminController($adminService, $authService))->editCourse($id);
+
+// Admin User Management Routes
+// $router->get('/admin/user/delete/{id}', function($id) use ($adminService, $authService) {
+//     (new AdminController($adminService, $authService))->deleteUser($id);
+// });
+
+// $router->get('/admin/user/edit/{id}', function($id) use ($adminService, $authService) {
+//     (new AdminController($adminService, $authService))->editUser($id);
+// });
+$router->get('/', function() use ($courseService) {
+    $db = Database::getInstance()->getConnection();
+    $sql = "SELECT c.*, u.username as teacher_name
+            FROM courses c 
+            JOIN users u ON c.teacher_id = u.id 
+            ORDER BY c.created_at DESC";
+    $courses = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    
+    require 'main.php';
+});
+$router->get('/', function() use ($courseService) {
+    $db = Database::getInstance()->getConnection();
+    
+    if (isset($_GET['search']) && !empty($_GET['search'])) {
+        $search = $_GET['search'];
+        $sql = "SELECT c.*, u.username as teacher_name
+                FROM courses c 
+                JOIN users u ON c.teacher_id = u.id 
+                WHERE c.title LIKE ? 
+                OR c.description LIKE ?
+                ORDER BY c.created_at DESC";
+                
+        $stmt = $db->prepare($sql);
+        $searchTerm = "%$search%";
+        $stmt->execute([$searchTerm, $searchTerm]);
+    } else {
+        $sql = "SELECT c.*, u.username as teacher_name
+                FROM courses c 
+                JOIN users u ON c.teacher_id = u.id 
+                ORDER BY c.created_at DESC";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+    }
+    
+    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    require 'main.php';
 });
 
-$router->post('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
-    (new AdminController($adminService, $authService))->editCourse($id);
-});
+
+// $router->post('/admin/user/edit/{id}', function($id) use ($adminService, $authService) {
+//     (new AdminController($adminService, $authService))->editUser($id);
+// });
+
+// // Admin Course Management Routes
+// $router->get('/admin/course/delete/{id}', function($id) use ($adminService, $authService) {
+//     (new AdminController($adminService, $authService))->deleteCourse($id);
+// });
+
+// $router->get('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
+//     (new AdminController($adminService, $authService))->editCourse($id);
+// });
+
+// $router->post('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
+//     (new AdminController($adminService, $authService))->editCourse($id);
+// });
 
 
 // $router->get('/admin/users', function() {
 //     require 'src/Views/admin/users.php'; 
 // });
-$router->get('/admin/course/delete/{id}', function($id) use ($adminService, $authService) {
-    (new AdminController($adminService, $authService))->deleteCourse($id);
-});
+// $router->get('/admin/course/delete/{id}', function($id) use ($adminService, $authService) {
+//     (new AdminController($adminService, $authService))->deleteCourse($id);
+// });
 
-$router->get('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
-    (new AdminController($adminService, $authService))->editCourse($id);
-});
+// $router->get('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
+//     (new AdminController($adminService, $authService))->editCourse($id);
+// });
 
-$router->post('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
-    (new AdminController($adminService, $authService))->editCourse($id);
-});
+// $router->post('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
+//     (new AdminController($adminService, $authService))->editCourse($id);
+// });
 // Admin User Edit Route
 // Admin routes with proper dependencies
 $router->get('/admin/user/edit/([0-9]+)', function($id) use ($adminService, $authService) {

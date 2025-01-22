@@ -62,6 +62,15 @@ CREATE TABLE enrollments (
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
     FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
 );
+CREATE TABLE course_media (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    course_id INT NOT NULL,
+    image_path VARCHAR(255),
+    video_path VARCHAR(255),
+    pdf_path VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+);
 
 -- Insertion d'un administrateur par défaut
 INSERT INTO users (username, email, password, role) 
