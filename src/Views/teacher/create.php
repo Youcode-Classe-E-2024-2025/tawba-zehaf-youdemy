@@ -50,20 +50,24 @@
                 </div>
             </div>
 
+
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="category">Category</label>
                 <select name="category" id="category" required class="w-full px-3 py-2 border rounded-lg">
                     <option value="">Select Category</option>
-                    <?php 
-        var_dump($categories); // Debug output
-        foreach ($categories as $category): 
-        ?>
-                    <option value="<?php echo $category['id']; ?>">
-                        <?php echo htmlspecialchars($category['name']); ?>
+                    <?php if (isset($categories) && is_array($categories)): ?>
+                    <?php foreach ($categories as $category): ?>
+                    <option value="<?= htmlspecialchars($category['id']) ?>">
+                        <?= htmlspecialchars($category['name']) ?>
                     </option>
                     <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
             </div>
+
+
+
+
 
 
             <div class="mb-4">

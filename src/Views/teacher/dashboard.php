@@ -1,239 +1,97 @@
-<?php var_dump($_SESSION);
-var_dump($_SESSION['user_role']);
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Youdemy Dashboard</title>
+    <title>Teacher Dashboard - Youdemy</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="bg-gray-100">
-    <!-- Navbar -->
-    <nav class="bg-white shadow-lg">
+    <!-- Top Navigation Bar -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <span class="text-xl font-semibold text-purple-600">Welcome back,
-                        <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+                    <span class="text-xl font-semibold text-purple-600">Welcome,
+                        <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                 </div>
-                <!-- Navbar -->
-                <!-- <nav class="bg-gray-800 text-white p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="text-2xl font-bold">Youdemy</div>
-            <ul class="flex space-x-4">
-                <li><a href="#" class="hover:text-gray-400">Home</a></li>
-                <li><a href="/teacher/courses" class="hover:text-gray-400">Courses</a></li>
-                <li><a href="#" class="hover:text-gray-400">Analytics</a></li>
-                <li><a href="#" class="hover:text-gray-400">Settings</a></li>
-            </ul>
+                <div class="flex items-center">
+                    <a href="/logout" class="text-gray-600 hover:text-purple-600">Logout</a>
+                </div>
+            </div>
         </div>
-    </nav> -->
+    </nav>
 
-                <!-- Dashboard -->
-                <div class="container mx-auto p-4">
-                    <!-- Cards -->
-                    <div class="container mx-auto p-4">
-                        <!-- Stats Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h3 class="text-lg font-semibold text-gray-700">Total Students</h3>
-                                <p class="text-2xl font-bold text-gray-900"><?php echo $stats['total_students'] ?? 0; ?>
-                                </p>
-                            </div>
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h3 class="text-lg font-semibold text-gray-700">Total Courses</h3>
-                                <p class="text-2xl font-bold text-gray-900"><?php echo $stats['total_courses'] ?? 0; ?>
-                                </p>
-                            </div>
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h3 class="text-lg font-semibold text-gray-700">Total Enrollments</h3>
-                                <p class="text-2xl font-bold text-gray-900">
-                                    <?php echo $stats['total_enrollments'] ?? 0; ?></p>
-                            </div>
-                        </div>
+    <!-- Main Content -->
+    <div class="pt-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Total Students</h3>
+                    <p class="text-3xl font-bold text-purple-600"><?php echo $stats['total_students'] ?? 0; ?></p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Total Courses</h3>
+                    <p class="text-3xl font-bold text-purple-600"><?php echo $stats['total_courses'] ?? 0; ?></p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Total Enrollments</h3>
+                    <p class="text-3xl font-bold text-purple-600"><?php echo $stats['total_enrollments'] ?? 0; ?></p>
+                </div>
+            </div>
 
-                        <!-- Courses List -->
-                        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-                            <h2 class="text-xl font-bold mb-4">Your Courses</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <?php foreach ($courses as $course): ?>
-                                <div class="border rounded-lg p-4">
-                                    <h3 class="font-semibold"><?php echo htmlspecialchars($course['title']); ?></h3>
-                                    <p class="text-gray-600 text-sm mb-2">
-                                        <?php echo htmlspecialchars($course['description']); ?>
-                                    </p>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-sm text-gray-500">
-                                            <?php echo $course['student_count']; ?> students
-                                        </span>
-                                        <a href="/teacher/courses/edit/<?php echo $course['id']; ?>"
-                                            class="text-purple-600 hover:text-purple-800">
-                                            Edit
-                                        </a>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Create Course Button -->
+            <div class="mb-8">
+                <a href="/teacher/create"
+                    class="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition duration-300">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Create New Course
+                </a>
+            </div>
 
-                    <h2 class="text-xl font-semibold mb-2">Manage Courses</h2>
-                    <table class="min-w-full">
-                        <thead>
+            <!-- Courses Table -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6 border-b">
+                    <h2 class="text-xl font-semibold text-gray-800">Manage Courses</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <th class="py-2 px-4 border-b">Course ID</th>
-                                <th class="py-2 px-4 border-b">Title</th>
-                                <th class="py-2 px-4 border-b">Description</th>
-                                <th class="py-2 px-4 border-b">Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Course ID
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="bg-white divide-y divide-gray-200">
                             <?php foreach ($courses as $course): ?>
-                            <tr>
-                                <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['id']) ?></td>
-                                <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['title']) ?></td>
-                                <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['description']) ?></td>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap"><?= htmlspecialchars($course['id']) ?></td>
+                                <td class="px-6 py-4"><?= htmlspecialchars($course['title']) ?></td>
+                                <td class="px-6 py-4"><?= htmlspecialchars($course['description']) ?></td>
                                 <td class="px-6 py-4">
-                                    <a href="/admin/edit_user/<?php echo $course['id']; ?>"
+                                    <a href="/teacher/courses/edit/<?= $course['id'] ?>"
                                         class="text-blue-600 hover:text-blue-800 mr-4">Edit</a>
-                                    <a href="/admin/delete/<?php echo $course['id']; ?>"
+                                    <a href="/teacher/courses/delete/<?= $course['id'] ?>"
                                         class="text-red-600 hover:text-red-800"
                                         onclick="return confirm('Are you sure?')">Delete</a>
                                 </td>
-
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
-</body>
-
-</html>
-
-<!-- Charts -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">Enrollments Over Time</h3>
-        <canvas id="enrollmentChart"></canvas>
+            </div>
+        </div>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">Courses by Category</h3>
-        <canvas id="categoryChart"></canvas>
-    </div>
-</div>
-</div>
-<div class="mb-6">
-    <a href="/teacher/create"
-        class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 inline-flex items-center">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Create New Course
-    </a>
-</div>
-
-
-<!-- JavaScript -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('db.php')
-        .then(response => response.json())
-        .then(data => {
-            // Update card data
-            document.getElementById('totalStudents').textContent = data.totalStudents;
-            document.getElementById('totalCourses').textContent = data.totalCourses;
-            document.getElementById('totalRevenue').textContent = `$${data.totalRevenue}`;
-
-            // Enrollment Chart
-            const enrollmentCtx = document.getElementById('enrollmentChart').getContext(
-                '2d');
-            new Chart(enrollmentCtx, {
-                type: 'line',
-                data: {
-                    labels: data.enrollmentData.map(item => item.date),
-                    datasets: [{
-                        label: 'Enrollments',
-                        data: data.enrollmentData.map(item => item.count),
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-
-            // Category Chart
-            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-            new Chart(categoryCtx, {
-                type: 'bar',
-                data: {
-                    labels: data.courseCategories.map(item => item.name),
-                    datasets: [{
-                        label: 'Courses by Category',
-                        data: data.courseCategories.map(item => item.count),
-                        backgroundColor: '#ef4444',
-                        borderColor: '#dc2626',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        })
-        .catch(error => console.error('Error fetching data:', error));
-});
-const DATA_COUNT = 7;
-const NUMBER_CFG = {
-    count: DATA_COUNT,
-    min: -100,
-    max: 100
-};
-
-const labels = Utils.months({
-    count: 7
-});
-const data = {
-    labels: labels,
-    datasets: [{
-            label: 'Fully Rounded',
-            data: Utils.numbers(NUMBER_CFG),
-            borderColor: Utils.CHART_COLORS.red,
-            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
-            borderWidth: 2,
-            borderRadius: Number.MAX_VALUE,
-            borderSkipped: false,
-        },
-        {
-            label: 'Small Radius',
-            data: Utils.numbers(NUMBER_CFG),
-            borderColor: Utils.CHART_COLORS.blue,
-            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
-            borderWidth: 2,
-            borderRadius: 5,
-            borderSkipped: false,
-        }
-    ]
-};
-</script>
 </body>
 
 </html>

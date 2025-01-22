@@ -110,13 +110,26 @@ $router->get('/teacher/dashboard', function() use ($courseService, $authService)
     (new TeacherController($courseService, $authService))->dashboard();
 });
 
-$router->get('/teacher/create', function() {
+$router->get('/teacher/create_btn', function() {
     require 'src/Views/teacher/create.php'; 
+});
+
+
+
+$router->get('/teacher/create', function() use ($courseService, $authService) {
+    (new TeacherController($courseService, $authService))->createCourse();
 });
 
 $router->post('/teacher/create', function() use ($courseService, $authService) {
     (new TeacherController($courseService, $authService))->createCourse();
 });
+
+
+
+
+
+// $router->get('/teacher/create', [TeacherController::class, 'create']);
+
 
 $router->get('/teacher/courses/:id/edit', function($id) {
     require 'src/Views/teacher/edit.php'; 

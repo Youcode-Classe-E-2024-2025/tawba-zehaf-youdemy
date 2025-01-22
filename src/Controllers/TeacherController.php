@@ -32,24 +32,66 @@ class TeacherController {
         'stats' => $stats
     ]);
 }
-    public function createCourse()
-    {
-        $db = Database::getInstance()->getConnection();
+// public function getCategories() {
+//         // Get database connection
+//         $db = Database::getInstance()->getConnection();
+    
+//         $stmt = $db->prepare("SELECT id, name FROM categories");
+//         $stmt->execute();
+//         $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Check if table exists
-        $checkTable = $db->query("SHOW TABLES LIKE 'categories'");
-        var_dump($checkTable->fetchAll());
+//         $data = [
+//             'categories' => $categories
+//         ];
         
-        // Show table structure
-        $structure = $db->query("DESCRIBE categories");
-        var_dump($structure->fetchAll());
+//         extract($data);
+//         require_once __DIR__ . '/../Views/teacher/create.php';
         
-        // Get actual data
-        $stmt = $db->query("SELECT * FROM categories");
-        var_dump($stmt->fetchAll());
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+// }
+
+private function renderView($view, $data = []) {
+    foreach ($data as $key => $value) {
+        ${$key} = $value;
     }
+    require_once __DIR__ . '/../Views/' . $view;
+}
+
+public function createCourse()
+{
+    // Get database connection
+    $db = Database::getInstance()->getConnection();
+    
+    // Fetch categories
+    $stmt = $db->prepare("SELECT id, name FROM categories");
+    $stmt->execute();
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Handle POST request
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $title = $_POST['title'];
+        $description = $_POST['description'];
+        $category_id = $_POST['category'];
+        $teacher_id = $_SESSION['user_id'];
+        
+        try {
+            $stmt = $db->prepare("INSERT INTO courses (title, description, category_id, teacher_id) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$title, $description, $category_id, $teacher_id]);
+            
+            header('Location: /teacher/dashboard');
+            exit();
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Failed to create course: ' . $e->getMessage();
+        }
+    }
+
+    // Render view with categories data
+    $this->renderView('teacher/create.php', ['categories' => $categories]);
+}
+
+
+
+
+
 
     public function getAllCategories()
 {
