@@ -58,34 +58,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="text-red-500 text-center mb-4"><?php echo htmlspecialchars($data['error']); ?></div>
             <?php endif; ?>
 
-            <form action="/register" method="POST" onsubmit="return validateRegistrationForm()">
+            <form action="/register" method="POST"
+                onsubmit="return validateForm(username, email, password, confirmPassword)">
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                 <!-- Username Field -->
                 <div class="mb-4">
                     <label for="username" class="block text-purple-600 font-medium">Username:</label>
-                    <input type="text" id="username" name="username" required
+                    <input type="text" id="register-username" name="username" required
                         class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
                 </div>
 
                 <!-- Email Field -->
                 <div class="mb-4">
                     <label for="email" class="block text-purple-600 font-medium">Email:</label>
-                    <input type="email" id="email" name="email" required
+                    <input type="email" id="register-email" name="email" required
                         class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
                 </div>
 
                 <!-- Password Field -->
                 <div class="mb-4">
                     <label for="password" class="block text-purple-600 font-medium">Password:</label>
-                    <input type="password" id="password" name="password" required
+                    <input type="password" id="register-password" name="password" required
                         class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
                 </div>
 
                 <!-- Confirm Password Field -->
                 <div class="mb-4">
                     <label for="confirm_password" class="block text-purple-600 font-medium">Confirm Password:</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required
+                    <input type="password" id="register-confirm_password" name="confirm_password" required
                         class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
                 </div>
 
@@ -121,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-
+    <script src="src/js/validation.js"></script>
 </body>
 
 </html>

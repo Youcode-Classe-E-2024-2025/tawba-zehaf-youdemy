@@ -10,6 +10,7 @@ use Youdemy\Repository\CourseRepository;
 use Youdemy\Repository\EnrollmentRepository;
 use Youdemy\Repository\ReviewRepository;
 use PDOException;
+use PDO;
 use DateTime;
 
 class AdminService {
@@ -18,7 +19,7 @@ class AdminService {
     private EnrollmentRepository $enrollmentRepository;
     private ReviewRepository $reviewRepository;
     private AuthService $authService;
-    private Database $db;
+    private database $db;
 
     public function __construct(
         UserRepository $userRepository,
@@ -26,14 +27,14 @@ class AdminService {
         EnrollmentRepository $enrollmentRepository,
         ReviewRepository $reviewRepository,
         AuthService $authService,
-        Database $db
+        Database $database
     ) {
         $this->userRepository = $userRepository;
         $this->courseRepository = $courseRepository;
         $this->enrollmentRepository = $enrollmentRepository;
         $this->reviewRepository = $reviewRepository;
         $this->authService = $authService;
-        $this->db = $db;
+        $this->db = $database;
     }
 
     // User Management
@@ -266,111 +267,31 @@ class AdminService {
             throw new \RuntimeException('Failed to remove course: ' . $e->getMessage());
         }
     }
-
-    public function getAllCourses(array $filters = [], int $page = 1, int $limit = 10): array {
-        if (!$this->authService->isAdmin()) {
-            throw new \RuntimeException('Unauthorized: Only admins can access all courses');
-        }
-
+    public function getAllCourses(): array
+    {
         try {
-            // Calculate offset for pagination
-            $offset = ($page - 1) * $limit;
-
-            // Build filter conditions
-            $conditions = [];
-            $params = [];
-
-            if (isset($filters['status'])) {
-                $conditions[] = 'c.is_published = :status';
-                $params['status'] = $filters['status'] === 'published' ? 1 : 0;
-            }
-
-            if (isset($filters['category_id'])) {
-                $conditions[] = 'c.category_id = :category_id';
-                $params['category_id'] = $filters['category_id'];
-            }
-
-            if (isset($filters['teacher_id'])) {
-                $conditions[] = 'c.teacher_id = :teacher_id';
-                $params['teacher_id'] = $filters['teacher_id'];
-            }
-
-            if (isset($filters['min_rating'])) {
-                $conditions[] = '(SELECT AVG(rating) FROM reviews r WHERE r.course_id = c.id) >= :min_rating';
-                $params['min_rating'] = $filters['min_rating'];
-            }
-
-            if (isset($filters['search'])) {
-                $conditions[] = '(c.title LIKE :search OR c.description LIKE :search)';
-                $params['search'] = '%' . $filters['search'] . '%';
-            }
-
-            // Build the query
-            $query = "SELECT 
-                        c.*,
-                        u.name as teacher_name,
-                        cat.name as category_name,
-                        (SELECT COUNT(*) FROM enrollments e WHERE e.course_id = c.id) as enrollment_count,
-                        (SELECT AVG(rating) FROM reviews r WHERE r.course_id = c.id) as average_rating,
-                        (SELECT COUNT(*) FROM reviews r WHERE r.course_id = c.id) as review_count,
-                        GROUP_CONCAT(t.name) as tags
+            $db = Database::getInstance()->getConnection();
+            
+            $sql = "SELECT 
+                    c.id,
+                    c.title,
+                    c.description,
+                    c.created_at,
+                    u.username as teacher_name,
+                    cat.name as category_name
                     FROM courses c
                     LEFT JOIN users u ON c.teacher_id = u.id
                     LEFT JOIN categories cat ON c.category_id = cat.id
-                    LEFT JOIN course_tags ct ON c.id = ct.course_id
-                    LEFT JOIN tags t ON ct.tag_id = t.id";
-
-            if (!empty($conditions)) {
-                $query .= " WHERE " . implode(' AND ', $conditions);
-            }
-
-            $query .= " GROUP BY c.id
-                       ORDER BY c.created_at DESC
-                       LIMIT :limit OFFSET :offset";
-
-            $params['limit'] = $limit;
-            $params['offset'] = $offset;
-
-            // Get total count for pagination
-            $countQuery = "SELECT COUNT(DISTINCT c.id) as total FROM courses c";
-            if (!empty($conditions)) {
-                $countQuery .= " WHERE " . implode(' AND ', $conditions);
-            }
-            $totalCount = $this->db->query($countQuery, $params)->fetch()['total'];
-
-            // Execute main query
-            $results = $this->db->query($query, $params)->fetchAll();
-
-            // Hydrate results
-            $courses = array_map(function($row) {
-                $course = $this->courseRepository->hydrateCourse($row);
-                if (isset($row['tags'])) {
-                    $course->setTags(explode(',', $row['tags']));
-                }
-                return [
-                    'course' => $course,
-                    'teacher_name' => $row['teacher_name'],
-                    'category_name' => $row['category_name'],
-                    'enrollment_count' => (int) $row['enrollment_count'],
-                    'average_rating' => $row['average_rating'] ? round((float) $row['average_rating'], 1) : null,
-                    'review_count' => (int) $row['review_count']
-                ];
-            }, $results);
-
-            return [
-                'courses' => $courses,
-                'pagination' => [
-                    'total' => $totalCount,
-                    'page' => $page,
-                    'limit' => $limit,
-                    'total_pages' => ceil($totalCount / $limit)
-                ]
-            ];
+                    ORDER BY c.created_at DESC";
+                    
+            $stmt = $db->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
         } catch (PDOException $e) {
             throw new \RuntimeException('Failed to fetch courses: ' . $e->getMessage());
         }
     }
-
+    
     // Statistics and Reports
     public function getDashboardStats(): array {
         try {
@@ -441,100 +362,6 @@ class AdminService {
         }
     }
 
-    public function getGlobalStats(): array {
-        if (!$this->authService->isAdmin()) {
-            throw new \RuntimeException('Unauthorized: Only admins can access global stats');
-        }
-
-        try {
-            // Get user statistics
-            $totalUsers = $this->userRepository->count();
-            $totalTeachers = $this->userRepository->countByRole('teacher');
-            $totalStudents = $this->userRepository->countByRole('student');
-            $newUsersThisMonth = $this->userRepository->countNewUsersSince(
-                (new DateTime())->modify('first day of this month')
-            );
-
-            // Get course statistics
-            $totalCourses = $this->courseRepository->getTotalCourses();
-            $publishedCourses = $this->courseRepository->countPublished();
-            $pendingCourses = $this->courseRepository->countPending();
-            $newCoursesThisMonth = $this->courseRepository->countNewCoursesSince(
-                (new DateTime())->modify('first day of this month')
-            );
-
-            // Get enrollment statistics
-            $totalEnrollments = $this->enrollmentRepository->getTotalCount();
-            $activeEnrollments = $this->enrollmentRepository->countActive();
-            $enrollmentsThisMonth = $this->enrollmentRepository->getNewEnrollmentsByDateRange(
-                (new DateTime())->modify('first day of this month'),
-                new DateTime()
-            );
-
-            // Get review statistics
-            $totalReviews = $this->reviewRepository->count();
-            $averageRating = $this->reviewRepository->getOverallAverageRating();
-            $reviewsThisMonth = $this->reviewRepository->countReviewsSince(
-                (new DateTime())->modify('first day of this month')
-            );
-
-            // Calculate revenue statistics
-            $totalRevenue = $this->enrollmentRepository->calculateTotalRevenue();
-            $revenueThisMonth = $this->enrollmentRepository->calculateRevenueSince(
-                (new DateTime())->modify('first day of this month')
-            );
-
-            // Get engagement metrics
-            $completionRate = $this->enrollmentRepository->getAverageCompletionRate();
-            $averageWatchTime = $this->enrollmentRepository->getAverageWatchTime();
-
-            // Get category statistics
-            $categoryCounts = $this->courseRepository->getCourseCountByCategory();
-            
-            // Get platform growth metrics
-            $monthlyGrowthRate = $this->calculateMonthlyGrowthRate();
-            $teacherRetentionRate = $this->calculateTeacherRetentionRate();
-            $studentRetentionRate = $this->calculateStudentRetentionRate();
-
-            return [
-                'users' => [
-                    'total' => $totalUsers,
-                    'teachers' => $totalTeachers,
-                    'students' => $totalStudents,
-                    'new_this_month' => $newUsersThisMonth,
-                    'teacher_retention' => $teacherRetentionRate,
-                    'student_retention' => $studentRetentionRate
-                ],
-                'courses' => [
-                    'total' => $totalCourses,
-                    'published' => $publishedCourses,
-                    'pending' => $pendingCourses,
-                    'new_this_month' => $newCoursesThisMonth,
-                    'by_category' => $categoryCounts
-                ],
-                'enrollments' => [
-                    'total' => $totalEnrollments,
-                    'active' => $activeEnrollments,
-                    'this_month' => $enrollmentsThisMonth,
-                    'completion_rate' => $completionRate,
-                    'average_watch_time' => $averageWatchTime
-                ],
-                'reviews' => [
-                    'total' => $totalReviews,
-                    'average_rating' => $averageRating,
-                    'this_month' => $reviewsThisMonth
-                ],
-                'revenue' => [
-                    'total' => $totalRevenue,
-                    'this_month' => $revenueThisMonth,
-                    'monthly_growth' => $monthlyGrowthRate
-                ],
-                'timestamp' => (new DateTime())->format('Y-m-d H:i:s')
-            ];
-        } catch (PDOException $e) {
-            throw new \RuntimeException('Failed to fetch global stats: ' . $e->getMessage());
-        }
-    }
 
     private function calculateMonthlyGrowthRate(): float {
         $currentMonth = $this->enrollmentRepository->calculateRevenueSince(
@@ -567,6 +394,47 @@ class AdminService {
         
         return ($stillActiveThisMonth / $activeLastMonth) * 100;
     }
+    public function getGlobalStats(): array 
+{
+    try {
+        $db = $this->db->getConnection();
+        
+        // Basic statistics queries
+        $totalUsers = $db->query("SELECT COUNT(*) FROM users")->fetchColumn();
+        $totalTeachers = $db->query("SELECT COUNT(*) FROM users WHERE role = 'teacher'")->fetchColumn();
+        $totalStudents = $db->query("SELECT COUNT(*) FROM users WHERE role = 'student'")->fetchColumn();
+        $totalCourses = $db->query("SELECT COUNT(*) FROM courses")->fetchColumn();
+        
+        // Get enrollments count
+        $totalEnrollments = $db->query("SELECT COUNT(*) FROM enrollments")->fetchColumn();
+        
+        // Get this month's statistics
+        $firstDayOfMonth = date('Y-m-01');
+        $newUsersThisMonth = $db->query("SELECT COUNT(*) FROM users WHERE created_at >= '$firstDayOfMonth'")->fetchColumn();
+        $newCoursesThisMonth = $db->query("SELECT COUNT(*) FROM courses WHERE created_at >= '$firstDayOfMonth'")->fetchColumn();
+        
+        return [
+            'users' => [
+                'total' => $totalUsers,
+                'teachers' => $totalTeachers,
+                'students' => $totalStudents,
+                'new_this_month' => $newUsersThisMonth
+            ],
+            'courses' => [
+                'total' => $totalCourses,
+                'new_this_month' => $newCoursesThisMonth
+            ],
+            'enrollments' => [
+                'total' => $totalEnrollments
+            ],
+            'timestamp' => date('Y-m-d H:i:s')
+        ];
+        
+    } catch (PDOException $e) {
+        throw new \RuntimeException('Failed to fetch global stats: ' . $e->getMessage());
+    }
+}
+
 
     private function calculateStudentRetentionRate(): float {
         $activeLastMonth = $this->userRepository->countActiveStudentsSince(

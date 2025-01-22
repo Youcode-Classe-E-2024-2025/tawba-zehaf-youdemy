@@ -81,7 +81,7 @@ class CourseController {
                 }
             }
         }
-        require_once __DIR__ . '/../Views/course_create.php'; // Show the form again if not POST
+        require_once __DIR__ . '/../Views/courses/course_create.php'; // Show the form again if not POST
     }
     private function notFound()
     {

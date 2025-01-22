@@ -110,11 +110,11 @@ $router->get('/teacher/dashboard', function() use ($courseService, $authService)
     (new TeacherController($courseService, $authService))->dashboard();
 });
 
-$router->get('/teacher/courses/create', function() {
+$router->get('/teacher/create', function() {
     require 'src/Views/teacher/create.php'; 
 });
 
-$router->post('/teacher/courses/create', function() use ($courseService, $authService) {
+$router->post('/teacher/create', function() use ($courseService, $authService) {
     (new TeacherController($courseService, $authService))->createCourse();
 });
 
@@ -125,15 +125,68 @@ $router->get('/teacher/courses/:id/edit', function($id) {
 $router->post('/teacher/courses/:id/edit', function($id) use ($courseService, $authService) {
     (new TeacherController($courseService, $authService))->editCourse($id);
 });
+// Student enrollment route
+$router->get('/student/enroll/:id', function($id) use ($courseService, $authService, $enrollmentService) {
+    (new StudentController($courseService, $authService, $enrollmentService))->enrollCourse($id);
+});
 
 // Admin routes
+// Admin routes
 $router->get('/admin/dashboard', function() use ($adminService, $authService) {
+    
     (new AdminController($adminService, $authService))->dashboard();
 });
-
-$router->get('/admin/users', function() {
-    require 'src/Views/admin/users.php'; 
+// Admin User Management Routes
+$router->get('/admin/user/delete/{id}', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->deleteUser($id);
 });
+
+$router->get('/admin/user/edit/{id}', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->editUser($id);
+});
+
+$router->post('/admin/user/edit/{id}', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->editUser($id);
+});
+
+// Admin Course Management Routes
+$router->get('/admin/course/delete/{id}', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->deleteCourse($id);
+});
+
+$router->get('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->editCourse($id);
+});
+
+$router->post('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->editCourse($id);
+});
+
+
+// $router->get('/admin/users', function() {
+//     require 'src/Views/admin/users.php'; 
+// });
+$router->get('/admin/course/delete/{id}', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->deleteCourse($id);
+});
+
+$router->get('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->editCourse($id);
+});
+
+$router->post('/admin/course/edit/{id}', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->editCourse($id);
+});
+// Admin User Edit Route
+// Admin routes with proper dependencies
+$router->get('/admin/user/edit/([0-9]+)', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->editUser($id);
+});
+
+$router->post('/admin/user/edit/([0-9]+)', function($id) use ($adminService, $authService) {
+    (new AdminController($adminService, $authService))->editUser($id);
+});
+
 
 $router->get('/admin/courses', function() {
     require 'src/Views/admin/courses.php'; 

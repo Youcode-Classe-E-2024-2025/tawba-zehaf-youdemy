@@ -7,7 +7,7 @@ class User
     private string $email;
     private string $password;
     private string $role = 'student';
-    private bool $isActive;
+    private bool $isActive=false;
     private bool $validated;
     private \DateTime $createdAt;
     private \DateTime $updatedAt;
@@ -24,17 +24,13 @@ class User
      */
     public function __construct(string $username, string $email, string $password, string $role = 'student')
     {
-        // $this->validateUsername($username);
-        // $this->validateEmail($email);
-        // $this->validatePassword($password);
+        
         
         $this->username = $username;
         $this->email = $email;
         $this->password = $password;
         $this->role = $role;
-        // $this->isActive = true;
-        // $this->createdAt = new \DateTime();
-        // $this->updatedAt = new \DateTime();
+       
     }
 
     /**
@@ -249,11 +245,8 @@ class User
         public function setName($username): void {
 
             $this->username = $username;}
+     
             
-    // public function isValidated(): bool {
-
-    //     return $this->validated;
-    // }
   
     
   

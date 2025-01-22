@@ -124,35 +124,6 @@ class UserRepository {
         
         $user->setUpdatedAt($now);
     }
-
-    // private function hydrateUser(array $data): User {
-    //     $user = new User($data['name'], $data['email'], $data['role']);
-    //     $user->setId($data['id']);
-    //     $user->setName($data['name']);
-    //     $user->setEmail($data['email']);
-    //     $user->setRole($data['role']);
-        
-    //     if (isset($data['password'])) {
-    //         $user->setPassword($data['password']);
-    //     }
-        
-    //     if (isset($data['created_at'])) {
-    //         $user->setCreatedAt(new DateTime($data['created_at']));
-    //     }
-        
-    //     if (isset($data['updated_at'])) {
-    //         $user->setUpdatedAt(new DateTime($data['updated_at']));
-    //     }
-        
-    //     return $user;}
-        
-    // public function hydrateUser(array $data): User {
-    //     $username = isset($data['username']) ? $data['username'] : ''; // Default to empty string if not set
-    //     $email = isset($data['email']) ? $data['email'] : '';
-    //     $role = isset($data['role']) ? $data['role'] : '';
-    
-    //     return new User($username, $email, $role);
-    // }
     public function hydrateUser(array $data): User {
         $username = isset($data['username']) ? $data['username'] : '';
         $email = isset($data['email']) ? $data['email'] : '';

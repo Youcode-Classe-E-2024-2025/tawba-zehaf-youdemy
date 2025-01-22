@@ -10,8 +10,11 @@ private $dbname = 'youdemy';
 private $username = 'root';
 private $password = '';
 
-private static $instance = null;
-private $connection;
+private static $instance = null;/**
+ * Stores the singleton instance of the Database class.
+ */
+
+public $connection;
 
 // Private constructor to prevent direct instantiation
 public function __construct() {

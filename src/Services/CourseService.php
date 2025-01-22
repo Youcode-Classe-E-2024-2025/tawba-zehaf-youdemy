@@ -10,6 +10,7 @@ use Youdemy\Repository\CourseRepository;
 use Youdemy\Repository\TagRepository;
 use Youdemy\Config\Database;
 use PDO;
+use PDOException;
 
 class CourseService
 {
@@ -120,16 +121,78 @@ class CourseService
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function getTeacherStats(int $teacherId): array {
-        $stmt = $this->db->getConnection()->prepare("
-            SELECT COUNT(*) as course_count, AVG(courses.rating) as average_rating
-            FROM courses
-            WHERE teacher_id = :teacherId
-        ");
-        $stmt->bindParam(':teacherId', $teacherId);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    public function getTeacherStats($teacherId)
+    {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            $sql = "SELECT 
+                    COUNT(DISTINCT c.id) as total_courses,
+                    COUNT(DISTINCT e.student_id) as total_students,
+                    COUNT(DISTINCT e.id) as total_enrollments
+                    FROM courses c
+                    LEFT JOIN enrollments e ON c.id = e.course_id
+                    WHERE c.teacher_id = ?";
+                    
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$teacherId]);
+            
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+            
+        } catch (PDOException $e) {
+            throw new RuntimeException('Failed to fetch teacher statistics: ' . $e->getMessage());
+        }
     }
+    public function getEnrolledCourses(int $studentId): array
+    {
+        $db = Database::getInstance()->getConnection();
+        
+        $sql = "SELECT 
+                c.id, 
+                c.title, 
+                c.description,
+                c.created_at,
+                u.username as teacher_name
+                FROM courses c
+                INNER JOIN enrollments e ON c.id = e.course_id
+                INNER JOIN users u ON c.teacher_id = u.id
+                WHERE e.student_id = ?
+                ORDER BY c.created_at DESC";
+                
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$studentId]);
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+public function getAvailableCourses(int $studentId): array
+{
+    $db = Database::getInstance()->getConnection();
+    
+    $sql = "SELECT 
+            c.id, 
+            c.title, 
+            c.description,
+            c.created_at,
+            u.username as teacher_name,
+            cat.name as category_name
+            FROM courses c
+            INNER JOIN users u ON c.teacher_id = u.id
+            LEFT JOIN categories cat ON c.category_id = cat.id
+            WHERE c.id NOT IN (
+                SELECT course_id 
+                FROM enrollments 
+                WHERE student_id = ?
+            )
+            ORDER BY c.created_at DESC";
+            
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$studentId]);
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+    
     public function getCourses($page, $coursesPerPage = 10) {
         $offset = ($page - 1) * $coursesPerPage; // Calculate the offset for pagination
         $stmt = $this->db->getConnection()->prepare('SELECT * FROM courses LIMIT :limit OFFSET :offset');
@@ -188,4 +251,31 @@ class CourseService
         $stmt->bindValue(':category', $category, PDO::PARAM_STR);
         $stmt->execute();
     }
+    public function getTeacherCourses($teacherId)
+{
+    try {
+        $db = Database::getInstance()->getConnection();
+        
+        $sql = "SELECT 
+                c.id,
+                c.title,
+                c.description,
+                c.created_at,
+                COUNT(e.id) as student_count
+                FROM courses c
+                LEFT JOIN enrollments e ON c.id = e.course_id
+                WHERE c.teacher_id = ?
+                GROUP BY c.id
+                ORDER BY c.created_at DESC";
+                
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$teacherId]);
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+    } catch (PDOException $e) {
+        throw new RuntimeException('Failed to fetch teacher courses: ' . $e->getMessage());
+    }
+}
+
 }

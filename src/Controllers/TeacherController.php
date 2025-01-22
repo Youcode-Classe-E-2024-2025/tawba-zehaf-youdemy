@@ -4,7 +4,9 @@ namespace Youdemy\Controllers;
 use Youdemy\Services\CourseService;
 use Youdemy\Services\AuthService;
 use Youdemy\Models\Entity\User;
+use Youdemy\Config\Database;
 use Exception;
+use PDO;
 
 class TeacherController {
     private CourseService $courseService;
@@ -14,61 +16,61 @@ class TeacherController {
         $this->courseService = $courseService;
         $this->authService = $authService;
     }
-
     public function dashboard()
-    {
-        $user = $this->authService->getCurrentUser();
-        // if (!$this->isTeacher($user)) {
-        //     $this->forbidden();
-        // }
-
-        try {
-            $courses = $this->courseService->getCoursesByTeacher($user->getId());
-            $stats = $this->courseService->getTeacherStats($user->getId());
-            
-            $this->render('teacher/dashboard.php', [
-                'courses' => $courses,
-                'stats' => $stats,
-                'user' => $user
-            ]);
-        } catch (Exception $e) {
-            $this->render('error.php', ['error' => $e->getMessage()]);
-        }
+{
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'teacher') {
+        header('Location: /login');
+        exit();
     }
 
+    $teacherId = $_SESSION['user_id'];
+    $courses = $this->courseService->getTeacherCourses($teacherId);
+    $stats = $this->courseService->getTeacherStats($teacherId);
+
+    $this->render('teacher/dashboard.php', [
+        'courses' => $courses,
+        'stats' => $stats
+    ]);
+}
     public function createCourse()
     {
-        $user = $this->authService->getCurrentUser();
-        if (!$this->isTeacher($user)) {
-            $this->forbidden();
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            try {
-                $courseData = $this->validateCourseData($_POST);
-                $course = $this->courseService->createCourse(
-                    $courseData['title'],
-                    $courseData['description'],
-                    $courseData['content'],
-                    $user,
-                    $courseData['category_id'],
-                    $courseData['tags'],
-                );
-                $this->redirect('/teacher/courses/' . $course->getId());
-            } catch (Exception $e) {
-                $this->render('teacher/create_course.php', [
-                    'error' => $e->getMessage(),
-                    'data' => $_POST,
-                    'categories' => $this->courseService->getAllCategories()
-                ]);
-            }
-        } else {
-            $this->render('teacher/create_course.php', [
-                'categories' => $this->courseService->getAllCategories()
-            ]);
-        }
+        $db = Database::getInstance()->getConnection();
+        
+        // Check if table exists
+        $checkTable = $db->query("SHOW TABLES LIKE 'categories'");
+        var_dump($checkTable->fetchAll());
+        
+        // Show table structure
+        $structure = $db->query("DESCRIBE categories");
+        var_dump($structure->fetchAll());
+        
+        // Get actual data
+        $stmt = $db->query("SELECT * FROM categories");
+        var_dump($stmt->fetchAll());
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getAllCategories()
+{
+    $db = Database::getInstance()->getConnection();
+    
+    // Check if table exists
+    $checkTable = $db->query("SHOW TABLES LIKE 'categories'");
+    var_dump($checkTable->fetchAll());
+    
+    // Show table structure
+    $structure = $db->query("DESCRIBE categories");
+    var_dump($structure->fetchAll());
+    
+    // Get actual data
+    $stmt = $db->query("SELECT * FROM categories");
+    var_dump($stmt->fetchAll());
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+    
     public function editCourse($courseId)
     {
         $user = $this->authService->getCurrentUser();

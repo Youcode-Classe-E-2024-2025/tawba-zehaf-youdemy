@@ -43,21 +43,21 @@ if (empty($_SESSION['csrf_token'])) {
                 <div class="text-red-500 text-center mb-4"><?php echo htmlspecialchars($data['error']); ?></div>
             <?php endif; ?> -->
 
-            <form action="/login" method="POST" onsubmit="return validateLoginForm()">
+            <form action="/login" method="POST" onsubmit="return  validateLoginForm(email, password) ">
 
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                 <!-- Email Field -->
                 <div class="mb-4">
                     <label for="email" class="block text-purple-600 font-medium">Email:</label>
-                    <input type="email" id="email" name="email" required
+                    <input type="email" id="login-email" name="email" required
                         class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
                 </div>
 
                 <!-- Password Field -->
                 <div class="mb-4">
                     <label for="password" class="block text-purple-600 font-medium">Password:</label>
-                    <input type="password" id="password" name="password" required
+                    <input type="password" id="login-password" name="password" required
                         class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
                 </div>
 
@@ -83,7 +83,7 @@ if (empty($_SESSION['csrf_token'])) {
             </div>
         </div>
     </div>
-
+    <script src="src/js/validation.js"></script>
 </body>
 
 </html>

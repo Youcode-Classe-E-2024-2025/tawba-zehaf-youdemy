@@ -45,25 +45,6 @@ class AuthService
 }
 
 
-    // public function register(string $name, string $email, string $password, string $role = 'student'): User {
-    //     try {
-    //         // Check if user already exists
-    //         if ($this->userRepository->findByEmail($email)) {
-    //             throw new \RuntimeException('Email already registered');
-    //         }
-
-    //         // Create new user
-    //         $user = new User($name, $email, $role);
-    //         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
-
-    //         $this->userRepository->save($user);
-    //         $this->startSession($user);
-
-    //         return $user;
-    //     } catch (PDOException $e) {
-    //         throw new \RuntimeException('Registration failed: ' . $e->getMessage());
-    //     }
-    // }
     public function register(string $username, string $email, string $password, string $role = 'student')
 {
         // Debug input parameters
@@ -82,17 +63,6 @@ class AuthService
     }
 
 
-    // }
-    // public function register(string $username, string $email, string $password): void {
-    //     if (strlen($password) < 8) {
-    //         throw new \InvalidArgumentException("Password must be at least 8 characters long");
-    //     }
-
-    //     // Create a new user
-    //     $user = new User($username, $email, $password, 'user'); // Default role
-    //     // Save user to the database
-    //     $this->userRepository->save($user); // Assuming you have a save method in UserRepository
-    // }
     public function getCurrentUser(): ?User
     {
         if (!isset($_SESSION['user_id'])) {
@@ -176,7 +146,7 @@ class AuthService
                 $user = new User($username, $email, $hashedPassword, $_POST['role']);
                 $user->setPassword($hashedPassword);
                 $this->userRepository->save($user);
-                header('Location: /login'); // Redirect to login page after successful registration
+                header('Location: /login'); 
                 exit;
             }
         }

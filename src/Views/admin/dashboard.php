@@ -4,7 +4,7 @@
 use Youdemy\Services\AdminService;
 
 // Assuming you have a way to get the current user and check for admin privileges
-$adminService = new AdminService($userRepository, $courseRepository, $enrollmentRepository, $reviewRepository, $authService, $database);
+// $adminService = new AdminService($userRepository, $courseRepository, $enrollmentRepository, $reviewRepository, $authService, $database);
 
 // Fetch users and courses
 $users = $adminService->getAllUsers();
@@ -43,11 +43,15 @@ $courses = $adminService->getAllCourses();
                     <td class="py-2 px-4 border-b"><?= htmlspecialchars($user['id']) ?></td>
                     <td class="py-2 px-4 border-b"><?= htmlspecialchars($user['username']) ?></td>
                     <td class="py-2 px-4 border-b"><?= htmlspecialchars($user['email']) ?></td>
-                    <td class="py-2 px-4 border-b"><?= htmlspecialchars($user['role']) ?></td>
-                    <td class="py-2 px-4 border-b">
-                        <a href="/admin/users/<?= $user['id'] ?>/edit" class="text-blue-500">Edit</a>
-                        <a href="/admin/users/<?= $user['id'] ?>/delete" class="text-red-500">Delete</a>
+                    <td class="py-2 px-4 border-b"><?= htmlspecialchars($user['role']) ?>
+                    <td class="px-6 py-4">
+                        <a href="/admin/user/edit/<?php echo $user['id']; ?>"
+                            class="text-blue-600 hover:text-blue-800 mr-4">Edit</a>
+                        <a href="/admin/user/delete/<?php echo $user['id']; ?>" class="text-red-600 hover:text-red-800"
+                            onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
                     </td>
+
+
                 </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -69,10 +73,13 @@ $courses = $adminService->getAllCourses();
                     <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['id']) ?></td>
                     <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['title']) ?></td>
                     <td class="py-2 px-4 border-b"><?= htmlspecialchars($course['description']) ?></td>
-                    <td class="py-2 px-4 border-b">
-                        <a href="/admin/courses/<?= $course['id'] ?>/edit" class="text-blue-500">Edit</a>
-                        <a href="/admin/courses/<?= $course['id'] ?>/delete" class="text-red-500">Delete</a>
+                    <td class="px-6 py-4">
+                        <a href="/admin/course/edit/<?php echo $course['id']; ?>"
+                            class="text-blue-600 hover:text-blue-800 mr-4">Edit</a>
+                        <a href="/admin/course/delete/<?php echo $course['id']; ?>"
+                            class="text-red-600 hover:text-red-800" onclick="return confirm('Are you sure?')">Delete</a>
                     </td>
+
                 </tr>
                 <?php endforeach; ?>
             </tbody>
