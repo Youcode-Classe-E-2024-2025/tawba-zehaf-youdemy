@@ -9,11 +9,13 @@ use RuntimeException;
 class AuthController
 {
     private AuthService $authService;
+    private UserRepository $userRepo;
 
     public function __construct() 
     {
         $db = Database::getInstance();
         $userRepository = new UserRepository($db);
+        $this->userRepo = $userRepository;
         $this->authService = new AuthService($userRepository);
     }
     public function register()
@@ -61,18 +63,48 @@ class AuthController
 
     public function login()
     {
+        // if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        //     $email = $_POST['email'] ?? '';
+        //     $password = $_POST['password'] ?? '';
+
+        //     try {
+        //         // TODO: Implement login logic with database
+        //         $_SESSION['user_id'] = 1; // Temporary
+        //         $_SESSION['success'] = 'Connexion réussie';
+        //         header('Location: /course_catalog');
+        //         exit;
+        //     } catch (\Exception $e) {
+        //         $_SESSION['error'] = 'Email ou mot de passe incorrect';
+        //     }
+        // }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
-
+    
             try {
-                // TODO: Implement login logic with database
-                $_SESSION['user_id'] = 1; // Temporary
-                $_SESSION['success'] = 'Connexion réussie';
-                header('Location: /course_catalog');
-                exit;
+                $user = $this->authService->login($email, $password);
+                
+                if ($user) {
+                    $_SESSION['username'] = $user->getId();
+                    $_SESSION['role'] = $user->getRole();
+                    $_SESSION['success'] = 'Login successful';
+                    if ($user->getRole() === 'teacher') {
+                        header('Location: /teacher/dashboard');
+                    } else if ($user->getRole() === 'student') {
+                        header('Location: /student/dashboard');
+                    } else if ($user->getRole() === 'admin') {
+                        header('Location: /admin/dashboard');
+                        
+                    } else {
+                        header('Locaation: /404_view');
+                    }
+                    exit;
+                } else {
+                    $_SESSION['error'] = 'Invalid email or password';
+                }
             } catch (\Exception $e) {
-                $_SESSION['error'] = 'Email ou mot de passe incorrect';
+                $_SESSION['error'] = 'Login failed: ' . $e->getMessage();
             }
         }
         

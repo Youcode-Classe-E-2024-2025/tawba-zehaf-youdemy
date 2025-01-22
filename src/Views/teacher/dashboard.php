@@ -1,3 +1,7 @@
+<?php var_dump($_SESSION);
+var_dump($_SESSION['user_role']);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 

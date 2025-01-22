@@ -17,20 +17,33 @@ class AuthService
     }
 
     public function login(string $email, string $password): ?User
-    {
-        try {
-            $user = $this->userRepository->findByEmail($email);
-
-            if (!$user || !password_verify($password, $user->getPassword())) {
-                return null;
-            }
-
-            $this->startSession($user);
-            return $user;
-        } catch (PDOException $e) {
-            throw new \RuntimeException('Authentication failed: ' . $e->getMessage());
+{
+    try {
+        $db = Database::getInstance()->getConnection();
+        
+        $sql = "SELECT * FROM users WHERE email = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$email]);
+        
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+        
+        if ($user && password_verify($password, $user['password'])) {
+            $userObj = new User(
+                $user['username'],
+                $user['email'],
+                $user['password'],
+                $user['role']
+            );
+            $userObj->setId($user['id']);
+            return $userObj;
         }
+        
+        return null;
+    } catch (PDOException $e) {
+        throw new \RuntimeException('Login failed: ' . $e->getMessage());
     }
+}
+
 
     // public function register(string $name, string $email, string $password, string $role = 'student'): User {
     //     try {

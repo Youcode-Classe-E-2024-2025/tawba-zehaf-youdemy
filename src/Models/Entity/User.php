@@ -2,11 +2,11 @@
 namespace Youdemy\Models\Entity;
 class User
 {
-    private int $userid;
+    private int $userid = 0;
     private string $username;
     private string $email;
     private string $password;
-    private string $role;
+    private string $role = 'student';
     private bool $isActive;
     private bool $validated;
     private \DateTime $createdAt;
@@ -24,13 +24,13 @@ class User
      */
     public function __construct(string $username, string $email, string $password, string $role = 'student')
     {
-        $this->validateUsername($username);
-        $this->validateEmail($email);
-        $this->validatePassword($password);
+        // $this->validateUsername($username);
+        // $this->validateEmail($email);
+        // $this->validatePassword($password);
         
         $this->username = $username;
         $this->email = $email;
-        $this->password = password_hash($password, PASSWORD_DEFAULT);
+        $this->password = $password;
         $this->role = $role;
         // $this->isActive = true;
         // $this->createdAt = new \DateTime();

@@ -103,6 +103,10 @@ $router->get('/student/courses/:id', function($id) use ($courseService, $authSer
 
 // Teacher routes
 $router->get('/teacher/dashboard', function() use ($courseService, $authService) {
+    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
+        header('Location: /login');
+        exit();
+    }
     (new TeacherController($courseService, $authService))->dashboard();
 });
 

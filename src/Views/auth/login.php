@@ -26,12 +26,25 @@ if (empty($_SESSION['csrf_token'])) {
         class="flex justify-center items-center min-h-screen bg-gradient-to-r from-purple-600 via-purple-500 to-purple-400">
         <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
             <h1 class="text-3xl font-semibold text-center text-purple-700 mb-6">Login to Youdemy</h1>
-
-            <?php if(isset($data['error'])): ?>
-            <div class="text-red-500 text-center mb-4"><?php echo htmlspecialchars($data['error']); ?></div>
+            <?php if (isset($_SESSION['error'])): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline"><?php echo htmlspecialchars($_SESSION['error']); ?></span>
+            </div>
+            <?php unset($_SESSION['error']); ?>
             <?php endif; ?>
 
+            <?php if (isset($_SESSION['success'])): ?>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline"><?php echo htmlspecialchars($_SESSION['success']); ?></span>
+            </div>
+            <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+            <!-- <?php if (isset($data['error'])): ?>
+                <div class="text-red-500 text-center mb-4"><?php echo htmlspecialchars($data['error']); ?></div>
+            <?php endif; ?> -->
+
             <form action="/login" method="POST" onsubmit="return validateLoginForm()">
+
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                 <!-- Email Field -->

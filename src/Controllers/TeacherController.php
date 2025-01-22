@@ -18,9 +18,9 @@ class TeacherController {
     public function dashboard()
     {
         $user = $this->authService->getCurrentUser();
-        if (!$this->isTeacher($user)) {
-            $this->forbidden();
-        }
+        // if (!$this->isTeacher($user)) {
+        //     $this->forbidden();
+        // }
 
         try {
             $courses = $this->courseService->getCoursesByTeacher($user->getId());
