@@ -37,30 +37,51 @@ class AuthService
             $userObj->setId($user['id']);
             return $userObj;
         }
-        
+        $_SESSION['error'] = 'Invalid email or password';
         return null;
     } catch (PDOException $e) {
+        $_SESSION['error'] = 'Login failed: ' . $e->getMessage();
         throw new \RuntimeException('Login failed: ' . $e->getMessage());
     }
 }
 
-
-    public function register(string $username, string $email, string $password, string $role = 'student')
+public function register(string $username, string $email, string $password, string $role = 'student')
 {
-        // Debug input parameters
-        try {
-            $db = Database::getInstance()->getConnection();
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            
-            $sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
-            $stmt = $db->prepare($sql);
-            
-            return $stmt->execute([$username, $email, $hashedPassword, $role]);
-            
-        } catch (PDOException $e) {
-            throw new \RuntimeException('Registration failed: ' . $e->getMessage());
-        }
+    $db = Database::getInstance()->getConnection();
+    
+
+    
+    // Check if email already exists
+    $checkEmail = $db->prepare("SELECT id FROM users WHERE email = ?");
+    $checkEmail->execute([$email]);
+    if ($checkEmail->rowCount() > 0) {
+        $_SESSION['error'] = 'Email already registered. Please use another email.';
+        return false;
     }
+
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    
+    $query = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
+    $stmt = $db->prepare($query);
+    return $stmt->execute([$username, $email, $hashedPassword, $role]);
+}
+
+//     public function register(string $username, string $email, string $password, string $role = 'student')
+// {
+//         // Debug input parameters
+//         try {
+//             $db = Database::getInstance()->getConnection();
+//             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            
+//             $sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
+//             $stmt = $db->prepare($sql);
+            
+//             return $stmt->execute([$username, $email, $hashedPassword, $role]);
+            
+//         } catch (PDOException $e) {
+//             throw new \RuntimeException('Registration failed: ' . $e->getMessage());
+//         }
+//     }
 
 
     public function getCurrentUser(): ?User

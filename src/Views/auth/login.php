@@ -18,7 +18,7 @@ if (empty($_SESSION['csrf_token'])) {
     <title>Login - Youdemy</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="src/js/validation.js"></script> <!-- Ensure this path is correct -->
+    <!-- <script src="src/js/validation.js"></script> Ensure this path is correct -->
 </head>
 
 <body class="bg-white font-sans">
@@ -43,20 +43,31 @@ if (empty($_SESSION['csrf_token'])) {
                 <div class="text-red-500 text-center mb-4"><?php echo htmlspecialchars($data['error']); ?></div>
             <?php endif; ?> -->
 
-            <form action="/login" method="POST" onsubmit="return  validateLoginForm(email, password) ">
+            <form action="/login" method="POST">
 
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
+                <?php
+                if (isset($_SESSION['error'])) {
+                    echo '<div class="bg-red-100 p-3 mb-4">' . $_SESSION['error'] . '</div>';
+                    unset($_SESSION['error']);
+                }
+                if (isset($_SESSION['success'])) {
+                    echo '<div class="bg-green-100 p-3 mb-4">' . $_SESSION['success'] . '</div>';
+                    unset($_SESSION['success']);
+                }
+                ?>
+
                 <!-- Email Field -->
                 <div class="mb-4">
-                    <label for="email" class="block text-purple-600 font-medium">Email:</label>
+                    <label for="login-email" class="block text-purple-600 font-medium">Email:</label>
                     <input type="email" id="login-email" name="email" required
                         class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
                 </div>
 
                 <!-- Password Field -->
                 <div class="mb-4">
-                    <label for="password" class="block text-purple-600 font-medium">Password:</label>
+                    <label for="login-password" class="block text-purple-600 font-medium">Password:</label>
                     <input type="password" id="login-password" name="password" required
                         class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
                 </div>
